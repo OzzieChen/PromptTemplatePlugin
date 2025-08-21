@@ -86,6 +86,28 @@ export async function deleteUserTemplate(id){
   await saveTemplates(next);
 }
 
+export function isDefaultTemplateId(id){
+  return DefaultTemplates.some(t=>t.id===id);
+}
+
+export async function upsertUserTemplate(template, originalId){
+  const list = await loadUserTemplates();
+  const targetId = originalId || template.id;
+  const idx = list.findIndex(t=>t.id===targetId);
+  if(idx>=0){
+    // keep id stable if editing existing
+    const updated = { ...template, id: targetId };
+    list.splice(idx,1, updated);
+  } else {
+    list.push(template);
+  }
+  await saveTemplates(list);
+}
+
+export function generateIdFromName(name){
+  return (name||'').trim().toLowerCase().replace(/[^a-z0-9_\-]+/g,'_').replace(/^_+|_+$/g,'') || 'custom_template';
+}
+
 export async function loadOrder(){
   const sync = await chrome.storage.sync.get(STORAGE_KEYS.order);
   return sync[STORAGE_KEYS.order] || [];
