@@ -74,11 +74,11 @@ async function init(){
 backBtn.addEventListener('click', ()=>{ goHome(); });
 clearBtn.addEventListener('click', ()=>{ fields.querySelectorAll('input,textarea,select').forEach(el=>{ if(el.tagName==='SELECT'){ el.selectedIndex=0; } else { el.value=''; } }); updatePreview(); });
 copyBtn.addEventListener('click', async ()=>{ await navigator.clipboard.writeText(preview.textContent || ''); showToast('已复制'); });
-insertBtn.addEventListener('click', async ()=>{ const values = collectValues(fields); const text = buildPrompt(currentTemplate, values); try{ await sendInsertMessage(text, false); showToast('已插入'); }catch{ showToast('插入失败'); }});
+insertBtn.addEventListener('click', async ()=>{ const values = collectValues(fields); const text = buildPrompt(currentTemplate, values); try{ await sendInsertMessage(text, false); showToast('已插入'); }catch{ try{ await chrome.runtime.sendMessage({ type: 'openProviderAndInsert', text, sendNow: false, provider: 'chatgpt', tempChat: false }); showToast('已插入'); }catch{ showToast('插入失败'); } }});
 sendBtn.addEventListener('click', async ()=>{
   const values = collectValues(fields); const text = buildPrompt(currentTemplate, values);
   const settings = await loadSettings();
-  if(tempChat.checked){ try{ await sendToTemporaryChat(text); showToast('已发送到临时对话'); }catch{ showToast('发送失败'); } } else { try{ await sendInsertMessage(text, true); showToast('已注入并发送'); }catch{ showToast('发送失败'); } }
+  if(tempChat.checked){ try{ await sendToTemporaryChat(text); showToast('已发送到临时对话'); }catch{ showToast('发送失败'); } } else { try{ await sendInsertMessage(text, true); showToast('已注入并发送'); }catch{ try{ await chrome.runtime.sendMessage({ type: 'openProviderAndInsert', text, sendNow: true, provider: 'chatgpt', tempChat: false }); showToast('已注入并发送'); }catch{ showToast('发送失败'); } } }
 });
 
 createTpl.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
