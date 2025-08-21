@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Prompt Helper - Panel</title>
+<link rel="stylesheet" href="styles/common.css"/>
+<style>.container{min-width:auto;max-width:none;padding:14px}</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand"><span class="title">AI Prompt Helper</span><span id="siteBadge" class="badge">-</span></div>
+      <div class="controls">
+        <button id="openOptions" class="button ghost">模板管理</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label>模板</label>
+        <select id="templateSelect"></select>
+      </div>
+      <div id="variableFields" class="grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="row"><label>预览</label></div>
+      <div id="preview" class="preview"></div>
+    </div>
+
+    <div class="footer">
+      <span class="small">支持 ChatGPT / Kimi / DeepSeek</span>
+      <div style="display:flex;gap:8px">
+        <button id="insertBtn" class="button ghost">插入</button>
+        <button id="sendBtn" class="button">插入并发送</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="scripts/app.js"></script>
+  <script type="module" src="scripts/sidepanel.js"></script>
+</body>
+</html>

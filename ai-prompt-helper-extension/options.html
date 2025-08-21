@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Prompt Helper - 模板管理</title>
+<link rel="stylesheet" href="styles/common.css"/>
+<style>.container{max-width:880px}.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card)}
+.form-row{display:grid;grid-template-columns:140px 1fr;gap:10px;margin:8px 0}
+.subtle{font-size:12px;color:var(--muted)}
+.kv{display:flex;gap:8px;align-items:center;margin:6px 0}
+.kv input{width:auto}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><div class="brand"><span class="title">模板管理</span></div><div class="controls"><a href="popup.html" target="_blank" class="button ghost">打开弹窗预览</a></div></div>
+
+    <div class="card">
+      <div class="row">
+        <label>现有模板</label>
+        <span class="subtle">可编辑/删除。下方可新建模板。</span>
+      </div>
+      <div id="templateList" class="list"></div>
+    </div>
+
+    <div class="card">
+      <div class="row"><label>新建模板</label><span class="subtle">支持文本/下拉变量，支持自定义选项。</span></div>
+      <div class="form-row"><label>模板名称</label><input id="tplName" type="text" placeholder="如：书面材料英语（自定义）"/></div>
+      <div class="form-row"><label>场景</label>
+        <select id="tplScene">
+          <option value="formal_en">书面材料英语</option>
+          <option value="spoken_en">口语交流英语</option>
+          <option value="schedule">设置提醒</option>
+          <option value="tech_cn">技术理解（中文输出）</option>
+        </select>
+      </div>
+      <div class="form-row"><label>模板正文</label><textarea id="tplBody" placeholder="在此编写 Prompt，使用 {{变量名}} 引用变量"></textarea></div>
+      <div class="form-row"><label>变量</label>
+        <div>
+          <div id="varList"></div>
+          <div class="kv">
+            <input id="varKey" type="text" placeholder="变量键（英文/拼音）"/>
+            <input id="varLabel" type="text" placeholder="变量名称（中文显示）"/>
+            <select id="varType"><option value="text">文本</option><option value="textarea">多行文本</option><option value="select">下拉</option></select>
+            <input id="varOptions" type="text" placeholder="下拉选项，用逗号分隔"/>
+            <button id="addVar" class="button ghost">添加变量</button>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="justify-content:flex-end">
+        <button id="saveTpl" class="button">保存模板</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="scripts/app.js"></script>
+  <script type="module" src="scripts/options.js"></script>
+</body>
+</html>

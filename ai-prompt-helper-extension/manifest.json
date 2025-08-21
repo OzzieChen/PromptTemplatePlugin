@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "AI Prompt Helper",
+  "description": "预置并快速生成高质量 Prompt，支持 ChatGPT / Kimi / DeepSeek，弹窗与侧边栏 UI，浅色/深色主题。",
+  "version": "1.0.0",
+  "action": {
+    "default_title": "AI Prompt Helper",
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://*.openai.com/*",
+    "https://kimi.moonshot.cn/*",
+    "https://*.kimi.ai/*",
+    "https://chat.deepseek.com/*",
+    "https://*.deepseek.com/*"
+  ],
+  "background": {
+    "service_worker": "scripts/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://*.openai.com/*",
+        "https://kimi.moonshot.cn/*",
+        "https://*.kimi.ai/*",
+        "https://chat.deepseek.com/*",
+        "https://*.deepseek.com/*"
+      ],
+      "js": ["scripts/contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
