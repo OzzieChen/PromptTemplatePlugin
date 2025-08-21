@@ -10,11 +10,15 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse)=>{
     const url = 'https://chatgpt.com/?temporary-chat=true';
     const tab = await chrome.tabs.create({ url, active: true });
     // Wait briefly, then inject text via messaging when content script is ready
-    setTimeout(async ()=>{
-      try{
-        await chrome.tabs.sendMessage(tab.id, { type: 'insertPrompt', text: msg.text, sendNow: true });
-      }catch{}
-    }, 1200);
+    const tryInsert = async () => {
+      try{ await chrome.tabs.sendMessage(tab.id, { type: 'insertPrompt', text: msg.text, sendNow: true }); return true; }catch{ return false; }
+    };
+    let ok = false; for(let i=0;i<8;i++){ ok = await tryInsert(); if(ok) break; await new Promise(r=>setTimeout(r, 500)); }
+    sendResponse && sendResponse({ ok: true });
+  }
+  if(msg?.type === 'openPanelWindow'){
+    const url = chrome.runtime.getURL('sidepanel.html');
+    await chrome.windows.create({ url, type: 'popup', width: 420, height: 680 });
     sendResponse && sendResponse({ ok: true });
   }
 });

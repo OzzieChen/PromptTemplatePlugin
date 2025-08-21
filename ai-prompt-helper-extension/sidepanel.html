@@ -19,7 +19,10 @@
 
     <div id="view-home">
       <div class="cards" id="cards"></div>
-      <div class="small" style="margin-top:6px">拖拽卡片可排序</div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <span class="small">拖拽卡片可排序</span>
+        <button id="openPanelWindow" class="link">打开侧边栏</button>
+      </div>
     </div>
 
     <div id="view-detail" style="display:none">
@@ -34,18 +37,16 @@
         <div id="variableFields" class="grid"></div>
       </div>
       <div class="card">
-        <div class="row"><label>预览</label></div>
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <label>预览</label>
+          <div class="toolbar">
+            <button id="clearBtn" class="button ghost">清空</button>
+            <button id="copyBtn" class="button ghost">复制</button>
+            <button id="insertBtn" class="button ghost">插入</button>
+            <button id="sendBtn" class="button">插入并发送</button>
+          </div>
+        </div>
         <div id="preview" class="preview"></div>
-      </div>
-      <div class="footer">
-        <div style="display:flex;gap:8px">
-          <button id="clearBtn" class="button ghost">清空</button>
-          <button id="copyBtn" class="button ghost">复制</button>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button id="insertBtn" class="button ghost">插入</button>
-          <button id="sendBtn" class="button">插入并发送</button>
-        </div>
       </div>
     </div>
   </div>

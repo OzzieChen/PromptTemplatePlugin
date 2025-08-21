@@ -16,6 +16,7 @@ const insertBtn = document.getElementById('insertBtn');
 const sendBtn = document.getElementById('sendBtn');
 const tempChat = document.getElementById('tempChat');
 const toast = document.getElementById('toast');
+const openPanelWindow = document.getElementById('openPanelWindow');
 
 let templates = [];
 let currentTemplate = null;
@@ -77,5 +78,6 @@ sendBtn.addEventListener('click', async ()=>{
 
 createTpl.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
 openSettings.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
+openPanelWindow.addEventListener('click', ()=>{ chrome.runtime.sendMessage({ type: 'openPanelWindow' }); });
 
 init();
