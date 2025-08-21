@@ -1,10 +1,11 @@
 function findInput(){
   // ChatGPT
-  let el = document.querySelector('textarea[data-testid="prompt-textarea"]');
-  if(!el) el = document.querySelector('textarea[placeholder*="Message"]');
-  if(!el) el = document.querySelector('form textarea');
-  // DeepSeek / Kimi may use contenteditable
-  let editable = document.querySelector('div[contenteditable="true"]');
+  let el = document.querySelector('textarea[data-testid="prompt-textarea"]')
+        || document.querySelector('textarea[placeholder*="Message"]')
+        || document.querySelector('form textarea');
+  // DeepSeek / Kimi may use contenteditable or Slate editors
+  let editable = document.querySelector('div[contenteditable="true"][data-slate-editor="true"]')
+               || document.querySelector('div[contenteditable="true"]');
   return { textarea: el, editable };
 }
 
@@ -26,7 +27,8 @@ function trySend(){
     'button[data-testid="send-button"]',
     'button[aria-label="Send"]',
     'form button[type="submit"]',
-    'button:has(svg[aria-hidden="true"])'
+    'button:has(svg[aria-hidden="true"])',
+    'button[aria-label*="发送"],button:has(svg[aria-label*="Send"])'
   ];
   for(const sel of buttons){
     const btn = document.querySelector(sel);

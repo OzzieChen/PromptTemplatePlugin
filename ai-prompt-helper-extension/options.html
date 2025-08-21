@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AI Prompt Helper - 模板管理</title>
+<title>AI Prompt Helper - 设置与模板管理</title>
 <link rel="stylesheet" href="styles/common.css"/>
 <style>.container{max-width:880px}.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card)}
 .form-row{display:grid;grid-template-columns:140px 1fr;gap:10px;margin:8px 0}
@@ -14,7 +14,31 @@
 </head>
 <body>
   <div class="container">
-    <div class="header"><div class="brand"><span class="title">模板管理</span></div><div class="controls"><a href="popup.html" target="_blank" class="button ghost">打开弹窗预览</a></div></div>
+    <div class="header"><div class="brand"><span class="title">设置与模板管理</span></div><div class="controls"><a href="popup.html" target="_blank" class="button ghost">打开弹窗预览</a></div></div>
+
+    <div class="card">
+      <div class="row"><label>模型提供方</label>
+        <select id="provider">
+          <option value="chatgpt">ChatGPT</option>
+          <option value="kimi">Kimi</option>
+          <option value="deepseek">DeepSeek</option>
+        </select>
+      </div>
+      <div class="row"><label>ChatGPT域名</label>
+        <select id="chatgptDomain">
+          <option value="chatgpt.com">chatgpt.com</option>
+          <option value="chat.openai.com">chat.openai.com</option>
+        </select>
+      </div>
+      <div class="row"><label>默认模型</label><input id="model" type="text" placeholder="如 gpt-4o / kimi-1.5 / deepseek-r1"/></div>
+      <div class="row"><label>自动发送</label>
+        <select id="autoSend"><option value="false">否</option><option value="true">是</option></select>
+      </div>
+      <div class="row"><label>主题</label>
+        <select id="theme"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
+      </div>
+      <div class="row" style="justify-content:flex-end"><button id="saveSettings" class="button">保存设置</button></div>
+    </div>
 
     <div class="card">
       <div class="row">

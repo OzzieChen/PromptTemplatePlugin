@@ -20,6 +20,7 @@
   "host_permissions": [
     "https://chat.openai.com/*",
     "https://*.openai.com/*",
+    "https://chatgpt.com/*",
     "https://kimi.moonshot.cn/*",
     "https://*.kimi.ai/*",
     "https://chat.deepseek.com/*",
@@ -34,6 +35,7 @@
       "matches": [
         "https://chat.openai.com/*",
         "https://*.openai.com/*",
+        "https://chatgpt.com/*",
         "https://kimi.moonshot.cn/*",
         "https://*.kimi.ai/*",
         "https://chat.deepseek.com/*",

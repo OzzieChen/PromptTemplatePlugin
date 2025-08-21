@@ -1,4 +1,4 @@
-import { STORAGE_KEYS, loadTemplates, saveTemplates } from './app.js';
+import { STORAGE_KEYS, loadTemplates, saveTemplates, loadSettings, saveSettings } from './app.js';
 
 const list = document.getElementById('templateList');
 const nameInput = document.getElementById('tplName');
@@ -11,6 +11,13 @@ const varOptions = document.getElementById('varOptions');
 const addVarBtn = document.getElementById('addVar');
 const varList = document.getElementById('varList');
 const saveTplBtn = document.getElementById('saveTpl');
+// settings
+const provider = document.getElementById('provider');
+const chatgptDomain = document.getElementById('chatgptDomain');
+const model = document.getElementById('model');
+const autoSend = document.getElementById('autoSend');
+const theme = document.getElementById('theme');
+const saveSettingsBtn = document.getElementById('saveSettings');
 
 let templates = [];
 let newVars = [];
@@ -69,6 +76,23 @@ saveTplBtn.addEventListener('click', async ()=>{
 async function init(){
   templates = await loadTemplates();
   renderList();
+  const s = await loadSettings();
+  provider.value = s.provider || 'chatgpt';
+  chatgptDomain.value = s.preferChatGPTDomain || 'chatgpt.com';
+  model.value = s.model || '';
+  autoSend.value = String(!!s.autoSend);
+  theme.value = s.theme || 'system';
 }
 
 init();
+
+saveSettingsBtn.addEventListener('click', async ()=>{
+  const s = {
+    provider: provider.value,
+    preferChatGPTDomain: chatgptDomain.value,
+    model: model.value,
+    autoSend: autoSend.value === 'true',
+    theme: theme.value,
+  };
+  await saveSettings(s);
+});

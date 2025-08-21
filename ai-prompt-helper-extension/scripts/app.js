@@ -1,4 +1,4 @@
-export const STORAGE_KEYS = { templates: 'AI_PROMPT_HELPER_TEMPLATES_V1', settings: 'AI_PROMPT_HELPER_SETTINGS_V1' };
+export const STORAGE_KEYS = { templates: 'AI_PROMPT_HELPER_TEMPLATES_V1', settings: 'AI_PROMPT_HELPER_SETTINGS_V1', order: 'AI_PROMPT_HELPER_ORDER_V1' };
 
 export const DefaultTemplates = [
   {
@@ -59,17 +59,35 @@ export async function loadTemplates(){
   const byId = new Map();
   for(const t of DefaultTemplates){ byId.set(t.id, t); }
   for(const t of user){ byId.set(t.id, t); }
-  return Array.from(byId.values());
+  const merged = Array.from(byId.values());
+  // apply order
+  const ord = await loadOrder();
+  if(ord && ord.length){
+    merged.sort((a,b)=>{
+      const ia = ord.indexOf(a.id); const ib = ord.indexOf(b.id);
+      return (ia<0?9999:ia) - (ib<0?9999:ib);
+    });
+  }
+  return merged;
 }
 
 export async function saveTemplates(templates){
   await chrome.storage.sync.set({ [STORAGE_KEYS.templates]: templates });
 }
 
+export async function loadOrder(){
+  const sync = await chrome.storage.sync.get(STORAGE_KEYS.order);
+  return sync[STORAGE_KEYS.order] || [];
+}
+
+export async function saveOrder(order){
+  await chrome.storage.sync.set({ [STORAGE_KEYS.order]: order });
+}
+
 export function detectSiteBadge(url){
   try{
     const u = new URL(url || location.href);
-    if(/openai\.com|chatgpt/.test(u.hostname)) return 'ChatGPT';
+    if(/openai\.com|chatgpt\.com|chatgpt/.test(u.hostname)) return 'ChatGPT';
     if(/kimi|moonshot/.test(u.hostname)) return 'Kimi';
     if(/deepseek/.test(u.hostname)) return 'DeepSeek';
     return '通用';
@@ -150,4 +168,17 @@ export async function sendInsertMessage(promptText, sendNow){
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if(!tab || !tab.id) return;
   await chrome.tabs.sendMessage(tab.id, { type: 'insertPrompt', text: promptText, sendNow: !!sendNow });
+}
+
+export async function sendToTemporaryChat(promptText){
+  await chrome.runtime.sendMessage({ type: 'sendToTempChat', text: promptText });
+}
+
+export async function loadSettings(){
+  const sync = await chrome.storage.sync.get(STORAGE_KEYS.settings);
+  return sync[STORAGE_KEYS.settings] || { provider: 'chatgpt', preferChatGPTDomain: 'chatgpt.com', model: 'gpt-4o', autoSend: false, theme: 'system' };
+}
+
+export async function saveSettings(settings){
+  await chrome.storage.sync.set({ [STORAGE_KEYS.settings]: settings });
 }
