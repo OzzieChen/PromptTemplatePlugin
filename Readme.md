@@ -19,10 +19,10 @@ Hello world
 - 自动识别 ChatGPT/Kimi/DeepSeek，并注入到输入框；修复插入与自动发送
 
 ### 截图（示意）
-![首页卡片](/workspace/ai-prompt-helper-extension/assets/ui-home.svg)
-![模板详情](/workspace/ai-prompt-helper-extension/assets/ui-detail.svg)
-![设置页面](/workspace/ai-prompt-helper-extension/assets/ui-settings.svg)
-![深色主题](/workspace/ai-prompt-helper-extension/assets/ui-dark.svg)
+![首页卡片](ai-prompt-helper-extension/assets/ui-home.svg)
+![模板详情](ai-prompt-helper-extension/assets/ui-detail.svg)
+![设置页面](ai-prompt-helper-extension/assets/ui-settings.svg)
+![深色主题](ai-prompt-helper-extension/assets/ui-dark.svg)
 
 ### 版本更新
 - 1.1.0
