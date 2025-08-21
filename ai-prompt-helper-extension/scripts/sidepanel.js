@@ -1,6 +1,5 @@
-import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, detectSiteBadge, saveOrder, loadSettings, sendToTemporaryChat } from './app.js';
-const siteBadge = document.getElementById('siteBadge');
-const openOptions = document.getElementById('openOptions');
+import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, saveOrder, loadSettings, sendToTemporaryChat } from './app.js';
+const createTpl = document.getElementById('createTpl');
 const openSettings = document.getElementById('openSettings');
 
 const viewHome = document.getElementById('view-home');
@@ -16,6 +15,7 @@ const copyBtn = document.getElementById('copyBtn');
 const insertBtn = document.getElementById('insertBtn');
 const sendBtn = document.getElementById('sendBtn');
 const tempChat = document.getElementById('tempChat');
+const toast = document.getElementById('toast');
 
 let templates = [];
 let currentTemplate = null;
@@ -35,8 +35,8 @@ function mountCards(){
     const card = document.createElement('div');
     card.className = 'card interactive';
     card.draggable = true;
-    card.innerHTML = `<div class=\"row\" style=\"justify-content:space-between\"><div class=\"handle\">⋮⋮</div><div class=\"badge\">${t.scene}</div></div><div class=\"card-title\">${t.name}</div><div class=\"card-sub\">点击进入详情</div>`;
-    card.addEventListener('click', (e)=>{ if(e.target.closest('.handle')) return; goDetail(t); });
+    card.innerHTML = `<div class=\"row\" style=\"justify-content:space-between\"><div class=\"handle\">⋮⋮</div><div class=\"badge\">${t.scene}</div></div><div class=\"card-title\">${t.name}</div><div class=\"row\" style=\"justify-content:flex-end\"><button class=\"button ghost btn-edit\">编辑</button><button class=\"button ghost btn-delete\">删除</button></div>`;
+    card.addEventListener('click', (e)=>{ if(e.target.closest('.handle')) return; if(e.target.closest('.btn-edit')){ chrome.runtime.openOptionsPage(); return; } if(e.target.closest('.btn-delete')){ return; } goDetail(t); });
     card.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', t.id); });
     card.addEventListener('dragover', (e)=>{ e.preventDefault(); card.style.borderColor = '#c7d2fe'; });
     card.addEventListener('dragleave', ()=>{ card.style.borderColor = 'var(--border)'; });
@@ -56,25 +56,26 @@ function mountCards(){
   }
 }
 
+function showToast(text){ toast.textContent=text; toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>{ toast.style.display='none'; },2000); }
+
 async function init(){
   templates = await loadTemplates();
   mountCards();
-  siteBadge.textContent = detectSiteBadge(location.href);
   fields.addEventListener('input', updatePreview, { passive: true });
   fields.addEventListener('change', updatePreview);
 }
 
 backBtn.addEventListener('click', ()=>{ goHome(); });
 clearBtn.addEventListener('click', ()=>{ fields.querySelectorAll('input,textarea,select').forEach(el=>{ if(el.tagName==='SELECT'){ el.selectedIndex=0; } else { el.value=''; } }); updatePreview(); });
-copyBtn.addEventListener('click', async ()=>{ await navigator.clipboard.writeText(preview.textContent || ''); });
-insertBtn.addEventListener('click', async ()=>{ const values = collectValues(fields); const text = buildPrompt(currentTemplate, values); await sendInsertMessage(text, false); });
+copyBtn.addEventListener('click', async ()=>{ await navigator.clipboard.writeText(preview.textContent || ''); showToast('已复制'); });
+insertBtn.addEventListener('click', async ()=>{ const values = collectValues(fields); const text = buildPrompt(currentTemplate, values); try{ await sendInsertMessage(text, false); showToast('已插入'); }catch{ showToast('插入失败'); }});
 sendBtn.addEventListener('click', async ()=>{
   const values = collectValues(fields); const text = buildPrompt(currentTemplate, values);
   const settings = await loadSettings();
-  if(tempChat.checked){ await sendToTemporaryChat(text); } else { await sendInsertMessage(text, true); }
+  if(tempChat.checked){ try{ await sendToTemporaryChat(text); showToast('已发送到临时对话'); }catch{ showToast('发送失败'); } } else { try{ await sendInsertMessage(text, true); showToast('已注入并发送'); }catch{ showToast('发送失败'); } }
 });
 
-openOptions.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
+createTpl.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
 openSettings.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
 
 init();

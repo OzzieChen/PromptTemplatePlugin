@@ -10,10 +10,10 @@
 <body>
   <div class="container">
     <div class="header">
-      <div class="brand"><span class="title">AI Prompt Helper</span><span id="siteBadge" class="badge">-</span></div>
+      <div class="brand"><span class="title">AI Prompt Helper</span></div>
       <div class="controls toolbar">
-        <button id="openSettings" class="button ghost">设置</button>
-        <button id="openOptions" class="button ghost">模板管理</button>
+        <button id="createTpl" class="button ghost">新建</button>
+        <button id="openSettings" class="button">设置</button>
       </div>
     </div>
 
@@ -49,6 +49,7 @@
       </div>
     </div>
   </div>
+  <div id="toast" class="toast" style="display:none"></div>
   <script type="module" src="scripts/app.js"></script>
   <script type="module" src="scripts/sidepanel.js"></script>
 </body>

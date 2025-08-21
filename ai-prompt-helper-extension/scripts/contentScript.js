@@ -46,9 +46,11 @@ function trySend(){
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse)=>{
   if(msg?.type === 'insertPrompt'){
     const { textarea, editable } = findInput();
-    if(textarea){ setTextareaValue(textarea, msg.text); textarea.focus(); }
-    else if(editable){ setEditableValue(editable, msg.text); }
-    if(msg.sendNow){ setTimeout(()=>{ trySend(); }, 50); }
-    sendResponse && sendResponse({ ok: true });
+    try{
+      if(textarea){ setTextareaValue(textarea, msg.text); textarea.focus(); }
+      else if(editable){ setEditableValue(editable, msg.text); }
+      if(msg.sendNow){ setTimeout(()=>{ trySend(); }, 80); }
+      sendResponse && sendResponse({ ok: true });
+    }catch(e){ sendResponse && sendResponse({ ok:false, error: String(e) }); }
   }
 });
