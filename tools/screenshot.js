@@ -40,6 +40,32 @@ const puppeteer = require('puppeteer');
   const first = await page.$('.cards .card');
   if (first) { await first.click(); await page.waitForSelector('#preview'); await page.screenshot({ path: path.join(out, 'popup-detail.png') }); }
 
+  // popup create view (embedded)
+  const create = await browser.newPage();
+  await create.setViewport({ width: 420, height: 680, deviceScaleFactor: 2 });
+  await create.goto(popupUrl, { waitUntil: 'load' });
+  await create.evaluate(()=>{
+    const home = document.getElementById('view-home');
+    const detail = document.getElementById('view-detail');
+    const createV = document.getElementById('view-create');
+    if(home) home.style.display='none'; if(detail) detail.style.display='none'; if(createV) createV.style.display='block';
+  });
+  await create.waitForSelector('#c_name');
+  await create.screenshot({ path: path.join(out, 'popup-create.png') });
+
+  // popup settings view (embedded)
+  const settings = await browser.newPage();
+  await settings.setViewport({ width: 420, height: 680, deviceScaleFactor: 2 });
+  await settings.goto(popupUrl, { waitUntil: 'load' });
+  await settings.evaluate(()=>{
+    const home = document.getElementById('view-home');
+    const detail = document.getElementById('view-detail');
+    const s = document.getElementById('view-settings');
+    if(home) home.style.display='none'; if(detail) detail.style.display='none'; if(s) s.style.display='block';
+  });
+  await settings.waitForSelector('#s_provider');
+  await settings.screenshot({ path: path.join(out, 'popup-settings.png') });
+
   // options
   const options = await browser.newPage();
   await options.setViewport({ width: 880, height: 740, deviceScaleFactor: 2 });

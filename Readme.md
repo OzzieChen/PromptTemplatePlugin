@@ -29,12 +29,12 @@ Hello world
     <img src="ai-prompt-helper-extension/assets/popup-detail.png" alt="模板详情" width="420" />
   </div>
   <div>
-    <div><strong>设置页面</strong></div>
-    <img src="ai-prompt-helper-extension/assets/options.png" alt="设置页面" width="420" />
+    <div><strong>新建模板</strong></div>
+    <img src="ai-prompt-helper-extension/assets/popup-create.png" alt="新建模板" width="420" />
   </div>
   <div>
-    <div><strong>侧边栏首页</strong></div>
-    <img src="ai-prompt-helper-extension/assets/sidepanel-home.png" alt="侧边栏首页" width="420" />
+    <div><strong>设置页面</strong></div>
+    <img src="ai-prompt-helper-extension/assets/popup-settings.png" alt="设置页面" width="420" />
   </div>
 </div>
 
