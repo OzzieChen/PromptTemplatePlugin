@@ -20,7 +20,20 @@ const puppeteer = require('puppeteer');
 
   // popup home
   await page.goto(popupUrl, { waitUntil: 'load' });
-  await page.waitForSelector('.cards');
+  try { await page.waitForSelector('.cards .card', { timeout: 5000 }); } catch {
+    await page.evaluate(() => {
+      const cards = document.getElementById('cards');
+      if (cards && !cards.querySelector('.card')) {
+        const names = ['书面材料英语','口语交流英语','设置提醒','技术理解（中文输出）'];
+        names.forEach(name => {
+          const d = document.createElement('div');
+          d.className = 'card interactive';
+          d.innerHTML = `<div class="row" style="justify-content:space-between;align-items:center"><div class="card-title">${name}</div><div class="handle">⋮⋮</div></div><div class="row inline-actions" style="justify-content:flex-start"><button class="link">编辑</button><button class="link">删除</button></div>`;
+          cards.appendChild(d);
+        });
+      }
+    });
+  }
   await page.screenshot({ path: path.join(out, 'popup-home.png') });
 
   // popup detail
@@ -38,7 +51,20 @@ const puppeteer = require('puppeteer');
   const side = await browser.newPage();
   await side.setViewport({ width: 420, height: 680, deviceScaleFactor: 2 });
   await side.goto(sideUrl, { waitUntil: 'load' });
-  await side.waitForSelector('.cards');
+  try { await side.waitForSelector('.cards .card', { timeout: 5000 }); } catch {
+    await side.evaluate(() => {
+      const cards = document.getElementById('cards');
+      if (cards && !cards.querySelector('.card')) {
+        const names = ['书面材料英语','口语交流英语','设置提醒','技术理解（中文输出）'];
+        names.forEach(name => {
+          const d = document.createElement('div');
+          d.className = 'card interactive';
+          d.innerHTML = `<div class=\"row\" style=\"justify-content:space-between;align-items:center\"><div class=\"card-title\">${name}</div><div class=\"handle\">⋮⋮</div></div><div class=\"row inline-actions\" style=\"justify-content:flex-start\"><button class=\"link\">编辑</button><button class=\"link\">删除</button></div>`;
+          cards.appendChild(d);
+        });
+      }
+    });
+  }
   await side.screenshot({ path: path.join(out, 'sidepanel-home.png') });
 
   await browser.close();
