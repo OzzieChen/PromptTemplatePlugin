@@ -48,6 +48,63 @@
         <div id="preview" class="preview"></div>
       </div>
     </div>
+
+    <div id="view-create" style="display:none">
+      <div class="toolbar" style="margin-bottom:8px">
+        <button id="createBack" class="button ghost">返回</button>
+        <div class="spacer"></div>
+        <div class="card-sub">新建模板</div>
+      </div>
+      <div class="card">
+        <div class="row"><label>模板名称</label><input id="c_name" type="text" placeholder="如：书面材料英语（自定义）"></div>
+        <div class="row"><label>场景</label>
+          <select id="c_scene">
+            <option value="formal_en">书面材料英语</option>
+            <option value="spoken_en">口语交流英语</option>
+            <option value="schedule">设置提醒</option>
+            <option value="tech_cn">技术理解（中文输出）</option>
+          </select>
+        </div>
+        <div class="row"><label>模板正文</label><textarea id="c_body" placeholder="使用 {{变量名}} 引用变量"></textarea></div>
+        <div class="row"><label>变量</label>
+          <div style="width:100%">
+            <div id="c_vars"></div>
+            <div class="row">
+              <input id="c_vk" type="text" placeholder="变量键（英文/拼音）" style="max-width:160px">
+              <input id="c_vl" type="text" placeholder="变量名称（中文显示）" style="max-width:180px">
+              <select id="c_vt" style="max-width:120px"><option value="text">文本</option><option value="textarea">多行文本</option><option value="select">下拉</option></select>
+              <input id="c_vo" type="text" placeholder="下拉选项，用逗号分隔">
+              <button id="c_add" class="button ghost">添加</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="justify-content:flex-end"><button id="c_save" class="button">保存模板</button></div>
+      </div>
+    </div>
+
+    <div id="view-settings" style="display:none">
+      <div class="toolbar" style="margin-bottom:8px">
+        <button id="settingsBack" class="button ghost">返回</button>
+        <div class="spacer"></div>
+        <div class="card-sub">设置</div>
+      </div>
+      <div class="card">
+        <div class="row"><label>模型提供方</label>
+          <select id="s_provider">
+            <option value="chatgpt">ChatGPT</option>
+            <option value="kimi">Kimi</option>
+            <option value="deepseek">DeepSeek</option>
+          </select>
+        </div>
+        <div class="row"><label>ChatGPT域名</label>
+          <select id="s_domain"><option value="chatgpt.com">chatgpt.com</option><option value="chat.openai.com">chat.openai.com</option></select>
+        </div>
+        <div class="row"><label>默认模型</label><input id="s_model" type="text" placeholder="如 gpt-4o / kimi-1.5 / deepseek-r1"></div>
+        <div class="row"><label>自动发送</label><select id="s_auto"><option value="false">否</option><option value="true">是</option></select></div>
+        <div class="row"><label>主题</label><select id="s_theme"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></div>
+        <div class="row" style="justify-content:flex-end"><button id="s_save" class="button">保存设置</button></div>
+      </div>
+    </div>
   </div>
   <div id="toast" class="toast" style="display:none"></div>
   <script type="module" src="scripts/app.js"></script>
