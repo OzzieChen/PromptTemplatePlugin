@@ -36,9 +36,14 @@ const puppeteer = require('puppeteer');
   }
   await page.screenshot({ path: path.join(out, 'popup-home.png') });
 
-  // popup detail
+  // popup detail (click real card and wait for fields)
   const first = await page.$('.cards .card');
-  if (first) { await first.click(); await page.waitForSelector('#preview'); await page.screenshot({ path: path.join(out, 'popup-detail.png') }); }
+  if (first) {
+    await first.click();
+    await page.waitForSelector('#tplName');
+    await page.waitForSelector('#variableFields .row');
+    await page.screenshot({ path: path.join(out, 'popup-detail.png') });
+  }
 
   // popup create view (embedded)
   const create = await browser.newPage();
