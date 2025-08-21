@@ -1,0 +1,11 @@
+{
+  "name": "prompt-template-plugin",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "screenshot": "node tools/screenshot.js"
+  },
+  "devDependencies": {
+    "puppeteer": "22.15.0"
+  }
+}
