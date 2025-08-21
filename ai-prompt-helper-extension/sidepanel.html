@@ -11,29 +11,41 @@
   <div class="container">
     <div class="header">
       <div class="brand"><span class="title">AI Prompt Helper</span><span id="siteBadge" class="badge">-</span></div>
-      <div class="controls">
+      <div class="controls toolbar">
+        <button id="openSettings" class="button ghost">设置</button>
         <button id="openOptions" class="button ghost">模板管理</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="row">
-        <label>模板</label>
-        <select id="templateSelect"></select>
+    <div id="view-home">
+      <div class="cards" id="cards"></div>
+      <div class="small" style="margin-top:6px">拖拽卡片可排序</div>
+    </div>
+
+    <div id="view-detail" style="display:none">
+      <div class="toolbar" style="margin-bottom:8px">
+        <button id="backBtn" class="button ghost">返回</button>
+        <div class="spacer"></div>
+        <label class="small">临时对话(仅 ChatGPT)</label>
+        <input id="tempChat" type="checkbox"/>
       </div>
-      <div id="variableFields" class="grid"></div>
-    </div>
-
-    <div class="card">
-      <div class="row"><label>预览</label></div>
-      <div id="preview" class="preview"></div>
-    </div>
-
-    <div class="footer">
-      <span class="small">支持 ChatGPT / Kimi / DeepSeek</span>
-      <div style="display:flex;gap:8px">
-        <button id="insertBtn" class="button ghost">插入</button>
-        <button id="sendBtn" class="button">插入并发送</button>
+      <div class="card">
+        <div class="row"><label>模板</label><div id="tplName" class="card-title"></div></div>
+        <div id="variableFields" class="grid"></div>
+      </div>
+      <div class="card">
+        <div class="row"><label>预览</label></div>
+        <div id="preview" class="preview"></div>
+      </div>
+      <div class="footer">
+        <div style="display:flex;gap:8px">
+          <button id="clearBtn" class="button ghost">清空</button>
+          <button id="copyBtn" class="button ghost">复制</button>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="insertBtn" class="button ghost">插入</button>
+          <button id="sendBtn" class="button">插入并发送</button>
+        </div>
       </div>
     </div>
   </div>
