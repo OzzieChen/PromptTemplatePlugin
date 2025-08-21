@@ -17,10 +17,12 @@ select,input[type=text],textarea{width:100%;padding:10px 12px;border-radius:12px
 select:hover,input[type=text]:hover,textarea:hover{border-color:var(--primary)}
 select:focus,input[type=text]:focus,textarea:focus{box-shadow:0 0 0 3px rgba(43,92,255,0.15);border-color:var(--primary)}
 textarea{min-height:160px;resize:vertical}
-.button{appearance:none;border:0;background:var(--primary);color:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer;transition:transform .05s ease,box-shadow .2s ease,filter .2s ease;background-image:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.06));box-shadow:0 2px 0 var(--primary-600)}
+.button{appearance:none;border:0;background:var(--primary);color:#fff;border-radius:12px;padding:8px 12px;font-weight:600;cursor:pointer;transition:transform .05s ease,box-shadow .2s ease,filter .2s ease;background-image:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.06));box-shadow:0 2px 0 var(--primary-600);font-size:13px}
 .button:hover{filter:saturate(1.1)}
 .button:active{transform:translateY(1px);box-shadow:0 1px 0 var(--primary-600)}
 .button.ghost{background:transparent;color:var(--fg);border:1px solid var(--border);box-shadow:none}
+.button.secondary{background:transparent;color:var(--fg);border:1px solid var(--border)}
+.button.primary{background:var(--primary);color:#fff}
 .button.icon{display:inline-flex;align-items:center;gap:6px}
 .link{background:none;border:none;color:var(--muted);padding:0;margin:0;font-size:12px;text-decoration:underline;cursor:pointer}
 .link:hover{color:var(--primary)}
@@ -35,7 +37,10 @@ textarea{min-height:160px;resize:vertical}
 @media (min-width:680px){.cards{grid-template-columns:1fr 1fr}}
 .card-title{font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .card-sub{font-size:12px;color:var(--muted)}
-.handle{cursor:grab;user-select:none}
+.handle{cursor:grab;user-select:none;font-size:16px;color:var(--muted)}
+#cards .card .row:last-child{margin-top:0}
+#cards .inline-actions{display:flex;gap:12px}
+#cards .inline-actions .link{font-size:12px}
 .handle:active{cursor:grabbing}
 
 .toolbar{display:flex;gap:8px;align-items:center}

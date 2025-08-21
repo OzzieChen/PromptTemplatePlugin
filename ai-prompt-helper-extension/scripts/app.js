@@ -75,6 +75,17 @@ export async function saveTemplates(templates){
   await chrome.storage.sync.set({ [STORAGE_KEYS.templates]: templates });
 }
 
+export async function loadUserTemplates(){
+  const sync = await chrome.storage.sync.get(STORAGE_KEYS.templates);
+  return sync[STORAGE_KEYS.templates] || [];
+}
+
+export async function deleteUserTemplate(id){
+  const list = await loadUserTemplates();
+  const next = list.filter(t=>t.id !== id);
+  await saveTemplates(next);
+}
+
 export async function loadOrder(){
   const sync = await chrome.storage.sync.get(STORAGE_KEYS.order);
   return sync[STORAGE_KEYS.order] || [];
@@ -181,4 +192,17 @@ export async function loadSettings(){
 
 export async function saveSettings(settings){
   await chrome.storage.sync.set({ [STORAGE_KEYS.settings]: settings });
+}
+
+export async function smartInsertOrSend(promptText, sendNow, opts={}){
+  try{
+    await sendInsertMessage(promptText, !!sendNow);
+    return { ok: true };
+  }catch(e){
+    const settings = await loadSettings();
+    const provider = settings.provider || 'chatgpt';
+    const tempChat = !!opts.tempChat;
+    const res = await chrome.runtime.sendMessage({ type: 'openProviderAndInsert', text: promptText, sendNow: !!sendNow, provider, tempChat });
+    return res || { ok: false };
+  }
 }

@@ -37,7 +37,7 @@ function mountCards(){
     const card = document.createElement('div');
     card.className = 'card interactive';
     card.draggable = true;
-    card.innerHTML = `<div class=\"row\" style=\"justify-content:space-between\"><div class=\"handle\">⋮⋮</div><div class=\"badge\">${t.scene}</div></div><div class=\"card-title\">${t.name}</div><div class=\"row\" style=\"justify-content:flex-end\"><button class=\"button ghost btn-edit\">编辑</button><button class=\"button ghost btn-delete\">删除</button></div>`;
+    card.innerHTML = `<div class="row" style="justify-content:space-between;align-items:center"><div class="handle">⋮⋮</div><div class="card-title">${t.name}</div></div><div class="row inline-actions" style="justify-content:flex-start"><button class="link btn-edit">编辑</button><button class="link btn-delete">删除</button></div>`;
     card.addEventListener('click', (e)=>{ if(e.target.closest('.handle')) return; if(e.target.closest('.btn-edit')){ chrome.runtime.openOptionsPage(); return; } if(e.target.closest('.btn-delete')){ return; } goDetail(t); });
     card.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', t.id); });
     card.addEventListener('dragover', (e)=>{ e.preventDefault(); card.style.borderColor = '#c7d2fe'; });
