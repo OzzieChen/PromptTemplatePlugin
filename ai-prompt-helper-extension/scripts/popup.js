@@ -1,4 +1,4 @@
-import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, saveOrder, loadSettings, sendToTemporaryChat } from './app.js';
+import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, saveOrder, loadSettings, sendToTemporaryChat, DefaultTemplates } from './app.js';
 
 const createTpl = document.getElementById('createTpl');
 const openSettings = document.getElementById('openSettings');
@@ -21,6 +21,7 @@ const openPanelWindow = document.getElementById('openPanelWindow');
 
 let templates = [];
 let currentTemplate = null;
+const isDemo = new URLSearchParams(location.search).get('demo') === '1';
 
 function goHome(){
   viewHome.style.display = 'block';
@@ -82,7 +83,11 @@ function showToast(text){
 }
 
 async function init(){
-  templates = await loadTemplates();
+  if(isDemo || typeof chrome === 'undefined'){
+    templates = DefaultTemplates.slice();
+  } else {
+    templates = await loadTemplates();
+  }
   mountCards();
   fields.addEventListener('input', updatePreview, { passive: true });
   fields.addEventListener('change', updatePreview);
@@ -103,8 +108,8 @@ sendBtn.addEventListener('click', async ()=>{
   }
 });
 
-createTpl.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
-openSettings.addEventListener('click', ()=>{ chrome.runtime.openOptionsPage(); });
-openPanelWindow.addEventListener('click', ()=>{ chrome.runtime.sendMessage({ type: 'openPanelWindow' }); });
+createTpl.addEventListener('click', ()=>{ if(isDemo || typeof chrome === 'undefined'){ window.open('options.html?demo=1','_blank'); } else { chrome.runtime.openOptionsPage(); } });
+openSettings.addEventListener('click', ()=>{ if(isDemo || typeof chrome === 'undefined'){ window.open('options.html?demo=1','_blank'); } else { chrome.runtime.openOptionsPage(); } });
+openPanelWindow.addEventListener('click', ()=>{ if(!(isDemo || typeof chrome === 'undefined')){ chrome.runtime.sendMessage({ type: 'openPanelWindow' }); } else { window.open('sidepanel.html?demo=1','_blank','width=420,height=680'); } });
 
 init();

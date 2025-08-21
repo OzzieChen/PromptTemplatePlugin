@@ -1,4 +1,4 @@
-import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, saveOrder, loadSettings, sendToTemporaryChat } from './app.js';
+import { loadTemplates, renderVariableFields, collectValues, buildPrompt, sendInsertMessage, saveOrder, loadSettings, sendToTemporaryChat, DefaultTemplates } from './app.js';
 const createTpl = document.getElementById('createTpl');
 const openSettings = document.getElementById('openSettings');
 
@@ -20,6 +20,7 @@ const openPanelWindow = document.getElementById('openPanelWindow');
 
 let templates = [];
 let currentTemplate = null;
+const isDemo = new URLSearchParams(location.search).get('demo') === '1';
 
 function goHome(){ viewHome.style.display = 'block'; viewDetail.style.display = 'none'; }
 function goDetail(t){ currentTemplate = t; tplName.textContent=t.name; renderVariableFields(fields,t); updatePreview(); viewHome.style.display='none'; viewDetail.style.display='block'; }
@@ -60,7 +61,11 @@ function mountCards(){
 function showToast(text){ toast.textContent=text; toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>{ toast.style.display='none'; },2000); }
 
 async function init(){
-  templates = await loadTemplates();
+  if(isDemo || typeof chrome === 'undefined'){
+    templates = DefaultTemplates.slice();
+  } else {
+    templates = await loadTemplates();
+  }
   mountCards();
   fields.addEventListener('input', updatePreview, { passive: true });
   fields.addEventListener('change', updatePreview);

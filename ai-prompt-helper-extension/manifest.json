@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AI Prompt Helper",
   "description": "预置并快速生成高质量 Prompt，支持 ChatGPT / Kimi / DeepSeek，弹窗与侧边栏 UI，浅色/深色主题。",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "action": {
     "default_title": "AI Prompt Helper",
     "default_popup": "popup.html"

@@ -1,4 +1,4 @@
-import { STORAGE_KEYS, loadTemplates, saveTemplates, loadSettings, saveSettings } from './app.js';
+import { STORAGE_KEYS, loadTemplates, saveTemplates, loadSettings, saveSettings, DefaultTemplates } from './app.js';
 
 const list = document.getElementById('templateList');
 const nameInput = document.getElementById('tplName');
@@ -20,6 +20,7 @@ const theme = document.getElementById('theme');
 const saveSettingsBtn = document.getElementById('saveSettings');
 
 let templates = [];
+const isDemo = new URLSearchParams(location.search).get('demo') === '1';
 let newVars = [];
 
 function renderList(){
@@ -74,9 +75,13 @@ saveTplBtn.addEventListener('click', async ()=>{
 });
 
 async function init(){
-  templates = await loadTemplates();
+  if(isDemo || typeof chrome === 'undefined'){
+    templates = DefaultTemplates.slice();
+  } else {
+    templates = await loadTemplates();
+  }
   renderList();
-  const s = await loadSettings();
+  const s = isDemo ? { provider:'chatgpt', preferChatGPTDomain:'chatgpt.com', model:'gpt-4o', autoSend:false, theme:'system' } : await loadSettings();
   provider.value = s.provider || 'chatgpt';
   chatgptDomain.value = s.preferChatGPTDomain || 'chatgpt.com';
   model.value = s.model || '';

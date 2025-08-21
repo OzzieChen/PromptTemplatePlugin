@@ -18,13 +18,18 @@ Hello world
 - 设置页面：配置提供方、域名、默认模型、自动发送、主题偏好
 - 自动识别 ChatGPT/Kimi/DeepSeek，并注入到输入框；修复插入与自动发送
 
-### 截图（示意）
-![首页卡片](ai-prompt-helper-extension/assets/ui-home.svg)
-![模板详情](ai-prompt-helper-extension/assets/ui-detail.svg)
-![设置页面](ai-prompt-helper-extension/assets/ui-settings.svg)
-![深色主题](ai-prompt-helper-extension/assets/ui-dark.svg)
+### 截图（实际截图）
+![首页卡片](ai-prompt-helper-extension/assets/popup-home.png)
+![模板详情](ai-prompt-helper-extension/assets/popup-detail.png)
+![设置页面](ai-prompt-helper-extension/assets/options.png)
+![侧边栏首页](ai-prompt-helper-extension/assets/sidepanel-home.png)
 
 ### 版本更新
+- 1.1.1
+  - 修复注入逻辑（临时对话重试与错误提示），按钮 toast 提示
+  - 首页卡片操作改为链接样式，新增“打开侧边栏”
+  - 详情页按钮移至预览标题行，变量表单分行显示
+  - 深色模式下输入控件背景与对比度修复
 - 1.1.0
   - 全新首页卡片 + 拖拽排序
   - 详情：清空/复制/插入/插入并发送
