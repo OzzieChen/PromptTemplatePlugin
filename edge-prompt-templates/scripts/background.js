@@ -22,6 +22,8 @@ async function injectFlow(tabId, text, doSend){
       'textarea[placeholder*="Message"]',
       'div[contenteditable="true"][role="textbox"]',
       '[role="textbox"]',
+      'div[contenteditable="true"][data-lexical-editor]',
+      'div.ProseMirror[contenteditable="true"]',
       'textarea'
     ];
     const SEND = [
@@ -34,11 +36,32 @@ async function injectFlow(tabId, text, doSend){
       'form button:not([disabled])'
     ];
     function findEditable(root){
+      const host=(location.host||'').toLowerCase();
+      const provider = host.includes('chatgpt.com')||host.includes('openai.com') ? 'chatgpt'
+        : (host.includes('kimi.com')||host.includes('moonshot.cn') ? 'kimi'
+        : (host.includes('deepseek.com') ? 'deepseek' : 'other'));
+      const priSels = [];
+      if(provider==='chatgpt'){
+        priSels.push('textarea#prompt-textarea','textarea[data-testid="prompt-textarea"]','form textarea','[role="textbox"][contenteditable="true"]');
+      }else if(provider==='kimi'){
+        priSels.push('textarea[placeholder*="输入"]','textarea[placeholder*="说点什么"]','[role="textbox"][contenteditable="true"]');
+      }else if(provider==='deepseek'){
+        priSels.push('textarea[data-testid*="input" i]','[role="textbox"][contenteditable="true"]','div.ProseMirror[contenteditable="true"]');
+      }
+      const baseSels = priSels.concat(EDITABLE);
+      const isVisible = (el)=>{
+        if(!el) return false;
+        const rect=el.getBoundingClientRect?.();
+        if(!rect) return false;
+        const style = window.getComputedStyle?.(el);
+        if(style && (style.display==='none'||style.visibility==='hidden'||style.opacity==='0')) return false;
+        return rect.width>2 && rect.height>2;
+      };
       const visited=new Set();
       function dfs(node){
         if(!node || visited.has(node)) return null;
         visited.add(node);
-        for(const sel of EDITABLE){ try{ const el=node.querySelector?.(sel); if(el && el.offsetParent!==null) return el; }catch(e){} }
+        for(const sel of baseSels){ try{ const el=node.querySelector?.(sel); if(el && isVisible(el)) return el; }catch(e){} }
         const all=node.querySelectorAll?node.querySelectorAll('*'):[];
         for(const n of all){
           if(n.shadowRoot){ const e=dfs(n.shadowRoot); if(e) return e; }
@@ -77,6 +100,13 @@ async function injectFlow(tabId, text, doSend){
         el.dispatchEvent(new Event('change', { bubbles:true }));
         return true;
       }catch(e){ return false; }
+    }
+    function ensureFocus(el){
+      try{
+        el.scrollIntoView?.({block:'center', inline:'center', behavior:'instant'});
+        el.click?.();
+        el.focus?.();
+      }catch(e){}
     }
     function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
     async function trySend(inputEl){
@@ -120,9 +150,10 @@ async function injectFlow(tabId, text, doSend){
       });
     }
     const el = await waitForComposer(24000);
+    if(el){ ensureFocus(el); }
     const wrote = !!el && setNativeValueAndEvents(el, text);
     let sent = false;
-    if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
+    if(wrote && doSend){ await sleep(260); ensureFocus(el); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
