@@ -53,3 +53,14 @@
 - 模板详情页：`edge-prompt-templates/assets/detail.svg`
 - 新建/编辑页：`edge-prompt-templates/assets/edit.svg`
 - 设置页：`edge-prompt-templates/assets/settings.svg`
+
+<div>
+  <p><strong>首页</strong></p>
+  <img src="edge-prompt-templates/assets/home.svg" alt="首页（模板库/搜索）" width="900">
+  <p><strong>模板详情页</strong></p>
+  <img src="edge-prompt-templates/assets/detail.svg" alt="模板详情页（填充/预览/插入并发送）" width="900">
+  <p><strong>新建/编辑页</strong></p>
+  <img src="edge-prompt-templates/assets/edit.svg" alt="新建/编辑页面（字段设计器）" width="900">
+  <p><strong>设置页</strong></p>
+  <img src="edge-prompt-templates/assets/settings.svg" alt="设置页（提供商与主题）" width="760">
+</div>
