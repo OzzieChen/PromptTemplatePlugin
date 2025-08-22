@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.6）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.9）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -22,6 +22,11 @@
 2. 选择“加载已解压的扩展程序”，指向目录 `edge-prompt-templates`（内含 `manifest.json`）。
 3. 通过工具栏图标打开弹出页，或从菜单打开侧边栏面板进行使用。
 
+### 打包与发布（CI）
+- 工作流：`.github/workflows/package-edge-templates.yml`
+- 手动触发（可选创建 Release）：在 Actions 中运行该工作流，设置 `release=true` 则会基于 `manifest.json` 的版本创建 tag 与 Release，并上传 `edge-prompt-templates-v<version>.zip`。
+- 按 tag 触发：推送 `v*` 标签也会打包并上传 artifact。
+
 ### 权限说明（Manifest V3）
 - `permissions`: `storage`、`activeTab`、`scripting`、`tabs`
 - `host_permissions`: ChatGPT/Kimi/DeepSeek 站点 URL
@@ -38,7 +43,14 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.4.8`
+- 当前版本：`2.4.9`
+
+#### 2.4.9 变更
+- 修复：在浏览器主页面失焦时“插入/插入并发送”不稳定问题；扩大编辑器选择器并仅在可编辑时使用 activeElement 兜底，移除会导致白屏的写入回退。
+- 修复：浅色主题下滚动条与复选框底色偏深；统一滚动条与复选框样式与对焦态。
+- 修复：编辑页面“开关”区域复选框与文字未垂直居中；使用 inline-flex 居中。
+- 修复：视图切换后首页滚动条不消失；规范容器 overflow 与页面高度。
+- 构建：新增 GitHub Actions 工作流 `package-edge-templates.yml`，仅打包 `edge-prompt-templates`，支持手动触发与按 tag 触发，可选自动创建 Release。
 
 ### 截图（示例尺寸与说明）
 - 弹出页尺寸：宽 560px（以下截图均按真实弹窗宽度）
