@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.10.3 up');
+console.log('[PTS] background v2.4.10.4 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -135,7 +135,21 @@ async function injectFlow(tabId, text, doSend){
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
-  return res || { ok:false };
+  // guarded content-script fallback
+  try{
+    const t = await new Promise((resolve)=>{ try{ chrome.tabs.get(tabId, (tab)=>resolve(tab||null)); }catch(e){ resolve(null); } });
+    const okHost = t?.url && /^(https:\/\/)(chatgpt\.com|chat\.openai\.com|www\.kimi\.com|kimi\.moonshot\.cn|chat\.deepseek\.com)\//.test(t.url);
+    if(!okHost) return res || { ok:false };
+    const r = await new Promise((resolve)=>{
+      try{
+        chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>{
+          if(chrome.runtime.lastError){ resolve({ ok:false }); return; }
+          resolve(rr||{ ok:false });
+        });
+      }catch(e){ resolve({ ok:false }); }
+    });
+    return r || { ok:false };
+  }catch(e){ return res || { ok:false, error:String(e) }; }
 }
 
 function hostGroupFromUrl(u){
