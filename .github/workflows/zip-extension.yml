@@ -1,34 +1,6 @@
-name: Build Extension Zip
+name: DISABLED - deprecated workflow
 
 on:
-  workflow_dispatch: {}
-  push:
-    branches:
-      - cursor/fix-edge-insert-bug-and-update-readme-7f1c
+  workflow_call:
 
-permissions:
-  contents: write
-
-jobs:
-  zip:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Verify manifest exists
-        run: |
-          test -f edge-prompt-templates/manifest.json
-
-      - name: Create single-layer zip (root folder edge-prompt-templates)
-        run: |
-          zip -r edge-prompt-templates.zip edge-prompt-templates
-
-      - name: Publish GitHub Release asset
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v2.4.8
-          name: edge-prompt-templates v2.4.8
-          draft: false
-          prerelease: false
-          files: edge-prompt-templates.zip
+jobs: {}

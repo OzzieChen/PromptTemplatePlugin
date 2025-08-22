@@ -1,27 +1,6 @@
-name: Download edge-prompt-templates
+name: DISABLED - deprecated workflow
 
 on:
-  workflow_dispatch: {}
+  workflow_call:
 
-jobs:
-  pack:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Verify folder structure
-        run: |
-          test -d ./edge-prompt-templates
-          test -f ./edge-prompt-templates/manifest.json
-
-      - name: Create single-layer zip
-        run: |
-          zip -r edge-prompt-templates.zip edge-prompt-templates
-
-      - name: Upload zip artifact (first layer is folder)
-        uses: actions/upload-artifact@v4
-        with:
-          name: edge-prompt-templates
-          path: edge-prompt-templates.zip
-          if-no-files-found: error
+jobs: {}
