@@ -10,11 +10,20 @@ function readVersion(){
 
 function zip(){
   const version = readVersion();
-  const out = path.resolve(__dirname, `../edge-prompt-templates-v${version}.zip`);
-  const src = path.resolve(__dirname, '..', 'edge-prompt-templates');
-  // Use system zip if available
+  const root = path.resolve(__dirname, '..');
+  const folder = path.join(root, `edge-prompt-templates-v${version}`);
+  const out = path.join(root, `edge-prompt-templates-v${version}.zip`);
+  // prepare folder
+  if(fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
+  fs.cpSync(path.join(root, 'edge-prompt-templates'), folder, { recursive: true });
+  if(!fs.existsSync(path.join(folder, 'manifest.json'))){
+    console.error('manifest.json missing in versioned folder');
+    process.exit(1);
+  }
+  // zip the versioned folder
   try{
-    execFileSync('zip', ['-r', out, 'edge-prompt-templates', '-x', 'edge-prompt-templates/.git/*', 'edge-prompt-templates/.DS_Store'], { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
+    if(fs.existsSync(out)) fs.rmSync(out);
+    execFileSync('zip', ['-r', out, path.basename(folder)], { stdio: 'inherit', cwd: root });
     console.log('Created', out);
   }catch(e){
     console.error('zip failed:', e.message);
