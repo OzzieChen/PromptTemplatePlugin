@@ -19,7 +19,8 @@
     "storage",
     "activeTab",
     "scripting",
-    "tabs"
+    "tabs",
+    "windows"
   ],
   "host_permissions": [
     "https://chatgpt.com/*",

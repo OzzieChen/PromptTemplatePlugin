@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.6 up');
+console.log('[PTS] background v2.4.7 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -12,7 +12,8 @@ function execOnTab(tabId, args, func){
   });
 }
 async function injectFlow(tabId, text, doSend){
-  return await execOnTab(tabId, [text, !!doSend], async (text, doSend)=>{
+  // keep original executeScript path; add fallback to content script messaging if wrote is false
+  const res = await execOnTab(tabId, [text, !!doSend], async (text, doSend)=>{
     const EDITABLE = [
       'textarea[data-testid="prompt-textarea"]',
       'div[data-testid="composer"] textarea',
@@ -96,7 +97,16 @@ async function injectFlow(tabId, text, doSend){
     if(wrote && doSend){ sent = trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
+  if(res && (res.wrote || res.sent)) return res;
+  // fallback: ask content script to handle
+  try{
+    const r = await new Promise((resolve)=>{
+      chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>resolve(rr||{ok:false}));
+    });
+    return r || { ok:false };
+  }catch(e){ return res || { ok:false, error:String(e) }; }
 }
+
 async function ensureOpenAndInject(primary, text, doSend){
   try{
     const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
@@ -114,20 +124,30 @@ async function ensureOpenAndInject(primary, text, doSend){
       const r = await injectFlow(active.id, text, doSend);
       if(r && (r.wrote || r.sent)) return r;
     }
-    return await new Promise((resolve)=>{
-      chrome.windows.create({ url: primary, focused: true, type: 'normal', populate: true }, (win)=>{
-        if(chrome.runtime.lastError){ resolve({ ok:false, error:chrome.runtime.lastError.message }); return; }
-        const createdTab = (win && win.tabs && win.tabs[0]) ? win.tabs[0] : null;
-        const tabId = createdTab ? createdTab.id : undefined;
-        if(!tabId){ resolve({ ok:false, error:'未获取到新窗口标签' }); return; }
+    // open new window or tab and inject
+    const openAndWait = () => new Promise((resolve)=>{
+      const onReady = (tabId) => {
         const handler = async (tabIdUpdated, info) => {
           if(tabIdUpdated !== tabId || info.status !== 'complete') return;
           chrome.tabs.onUpdated.removeListener(handler);
           setTimeout(async ()=>{ const rr = await injectFlow(tabId, text, doSend); resolve(rr || { ok:false }); }, 1200);
         };
         chrome.tabs.onUpdated.addListener(handler);
-      });
+      };
+      const fallbackToTab = () => {
+        chrome.tabs.create({ url: primary, active: true }, (nt)=>{ if(nt?.id) onReady(nt.id); else resolve({ ok:false, error:'无法创建标签页' }); });
+      };
+      try{
+        if(chrome.windows?.create){
+          chrome.windows.create({ url: primary, focused: true, type: 'normal', populate: true }, (win)=>{
+            if(chrome.runtime.lastError || !win){ fallbackToTab(); return; }
+            const tab = (win.tabs && win.tabs[0]) ? win.tabs[0] : null;
+            if(tab?.id) onReady(tab.id); else fallbackToTab();
+          });
+        } else { fallbackToTab(); }
+      }catch(e){ fallbackToTab(); }
     });
+    return await openAndWait();
   }catch(e){ return { ok:false, error:String(e) }; }
 }
 chrome.runtime.onMessage.addListener((m, s, send)=>{

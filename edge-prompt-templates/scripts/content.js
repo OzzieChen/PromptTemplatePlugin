@@ -50,10 +50,10 @@ chrome.runtime.onMessage.addListener((m, s, send) => {
         (el||document.activeElement)?.dispatchEvent(new KeyboardEvent('keyup', o));
         sent = true;
       }
-      send({ ok: !!wrote, wrote: !!wrote, sent: !!sent });
+      try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
     }, 300);
     return true;
   }
-  send({ ok: !!wrote, wrote: !!wrote, sent: !!sent });
+  try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
   return true;
 });
