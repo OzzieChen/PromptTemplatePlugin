@@ -26,6 +26,7 @@ async function injectFlow(tabId, text, doSend){
       'button[data-testid="send-button"]',
       'button[aria-label="Send"]',
       'button[aria-label*="发送"]',
+      'button[aria-label*="send" i]',
       'button[type="submit"]',
       'form button:not([disabled])'
     ];
@@ -44,21 +45,41 @@ async function injectFlow(tabId, text, doSend){
       }
       return dfs(root||document);
     }
-    function setValue(el, val){
+    function setNativeValueAndEvents(el, val){
       if(!el) return false;
       const tag=(el.tagName||'').toLowerCase();
-      if(tag==='textarea'){ el.focus(); el.value=val; el.dispatchEvent(new Event('input',{bubbles:true})); return true; }
-      if(el.getAttribute && el.getAttribute('contenteditable')==='true'){
-        el.focus(); document.execCommand('selectAll', false, null); document.execCommand('insertText', false, val); return true;
-      }
-      try{ el.focus(); el.textContent=val; el.dispatchEvent(new Event('input',{bubbles:true})); return true; }catch(e){} return false;
+      try{
+        if(tag==='textarea' || tag==='input'){
+          const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')?.set
+            || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')?.set;
+          if(setter){ setter.call(el, val); }
+          else { el.value = val; }
+          el.focus();
+          el.dispatchEvent(new InputEvent('input', { bubbles:true, data:val }));
+          el.dispatchEvent(new Event('change', { bubbles:true }));
+          return true;
+        }
+        if(el.getAttribute && el.getAttribute('contenteditable')==='true'){
+          el.focus();
+          document.execCommand('selectAll', false, null);
+          document.execCommand('insertText', false, val);
+          el.dispatchEvent(new Event('input', { bubbles:true }));
+          el.dispatchEvent(new Event('change', { bubbles:true }));
+          return true;
+        }
+        el.focus();
+        el.textContent = val;
+        el.dispatchEvent(new Event('input', { bubbles:true }));
+        el.dispatchEvent(new Event('change', { bubbles:true }));
+        return true;
+      }catch(e){ return false; }
     }
-    function trySend(inputEl){
+    function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+    async function trySend(inputEl){
       const docs=[document];
       document.querySelectorAll('iframe').forEach(ifr=>{ try{ if(ifr.contentDocument) docs.push(ifr.contentDocument); }catch(e){} });
       for(const doc of docs){
-        const sels = SEND.slice();
-        for(const sel of sels){
+        for(const sel of SEND){
           try{
             const btn=doc.querySelector(sel);
             if(btn && !btn.disabled){ btn.click(); return true; }
@@ -73,12 +94,16 @@ async function injectFlow(tabId, text, doSend){
         }
       }
       try{
+        inputEl?.focus();
         const k={key:'Enter',code:'Enter',which:13,keyCode:13,bubbles:true};
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keydown', k));
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keypress', k));
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keyup', k));
+        // Also try form submit if available
+        if(inputEl && inputEl.form){ inputEl.form.requestSubmit?.(); inputEl.form.dispatchEvent(new Event('submit', { bubbles:true, cancelable:true })); }
         return true;
-      }catch(e){} return false;
+      }catch(e){}
+      return false;
     }
     async function waitForComposer(ms=20000){
       const start=Date.now();
@@ -91,10 +116,10 @@ async function injectFlow(tabId, text, doSend){
         }; tick();
       });
     }
-    const el = await waitForComposer(20000);
-    const wrote = !!el && setValue(el, text);
+    const el = await waitForComposer(22000);
+    const wrote = !!el && setNativeValueAndEvents(el, text);
     let sent = false;
-    if(wrote && doSend){ sent = trySend(el); }
+    if(wrote && doSend){ await sleep(200); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;

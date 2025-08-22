@@ -25,13 +25,13 @@ jobs:
 
       - name: Prepare versioned folder (only extension)
         run: |
-          rm -rf edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          cp -r edge-prompt-templates edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          test -f edge-prompt-templates-v${{ steps.ver.outputs.version }}/manifest.json
+          rm -rf edge-prompt-templates
+          cp -r edge-prompt-templates edge-prompt-templates
+          test -f edge-prompt-templates/manifest.json
 
       - name: Create single-layer zip (first layer is folder)
         run: |
-          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
 
       - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
