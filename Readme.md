@@ -49,18 +49,18 @@
 请将真实截图放入 `edge-prompt-templates/assets/` 目录，并在上文位置按需内嵌或链接展示。
 
 #### 示例截图
-- 首页：`assets/home.svg`
-- 模板详情页：`assets/detail.svg`
-- 新建/编辑页：`assets/edit.svg`
-- 设置页：`assets/settings.svg`
+- 首页：`assets/home.png`
+- 模板详情页：`assets/detail.png`
+- 新建/编辑页：`assets/edit.png`
+- 设置页：`assets/settings.png`
 
 <div>
   <p><strong>首页</strong></p>
-  <img src="assets/home.svg" alt="首页（模板库/搜索）" width="900">
+  <img src="assets/home.png" alt="首页（模板库/搜索）" width="900">
   <p><strong>模板详情页</strong></p>
-  <img src="assets/detail.svg" alt="模板详情页（填充/预览/插入并发送）" width="900">
+  <img src="assets/detail.png" alt="模板详情页（填充/预览/插入并发送）" width="900">
   <p><strong>新建/编辑页</strong></p>
-  <img src="assets/edit.svg" alt="新建/编辑页面（字段设计器）" width="900">
+  <img src="assets/edit.png" alt="新建/编辑页面（字段设计器）" width="900">
   <p><strong>设置页</strong></p>
-  <img src="assets/settings.svg" alt="设置页（提供商与主题）" width="760">
+  <img src="assets/settings.png" alt="设置页（提供商与主题）" width="760">
 </div>
