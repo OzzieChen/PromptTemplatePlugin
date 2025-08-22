@@ -23,10 +23,8 @@ jobs:
         run: |
           echo "version=$(node -p "require('./edge-prompt-templates/manifest.json').version")" >> $GITHUB_OUTPUT
 
-      - name: Prepare versioned folder (only extension)
+      - name: Verify manifest exists
         run: |
-          rm -rf edge-prompt-templates
-          cp -r edge-prompt-templates edge-prompt-templates
           test -f edge-prompt-templates/manifest.json
 
       - name: Create single-layer zip (first layer is folder)
