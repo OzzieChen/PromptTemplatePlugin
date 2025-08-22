@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.10.2 up');
+console.log('[PTS] background v2.4.10.3 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -12,7 +12,6 @@ function execOnTab(tabId, args, func){
   });
 }
 async function injectFlow(tabId, text, doSend){
-  // keep original executeScript path; add fallback to content script messaging if wrote is false
   const res = await execOnTab(tabId, [text, !!doSend], async (text, doSend)=>{
     const EDITABLE = [
       'textarea#prompt-textarea',
@@ -117,7 +116,7 @@ async function injectFlow(tabId, text, doSend){
       }catch(e){}
       return false;
     }
-    async function waitForComposer(ms=24000){
+    async function waitForComposer(ms=30000){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
@@ -126,31 +125,17 @@ async function injectFlow(tabId, text, doSend){
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
           setTimeout(tick, 300);
-        }; tick();
+        }; setTimeout(tick, 300);
       });
     }
-    const el = await waitForComposer(24000);
+    const el = await waitForComposer(30000);
     const wrote = !!el && setNativeValueAndEvents(el, text);
     let sent = false;
-    if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
+    if(wrote && doSend){ await sleep(300); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
-  // guarded fallback: only message content script when host matches
-  try{
-    const tab = await new Promise((resolve)=>{
-      try{ chrome.tabs.get(tabId, (t)=>resolve(t||null)); }catch(e){ resolve(null); }
-    });
-    const url = tab?.url || '';
-    const okHost = /^(https:\/\/)(chatgpt\.com|chat\.openai\.com|www\.kimi\.com|kimi\.moonshot\.cn|chat\.deepseek\.com)\//.test(url||'');
-    if(!okHost) return res || { ok:false };
-    const r = await new Promise((resolve)=>{
-      try{
-        chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>resolve(rr||{ok:false}));
-      }catch(e){ resolve({ ok:false }); }
-    });
-    return r || { ok:false };
-  }catch(e){ return res || { ok:false, error:String(e) }; }
+  return res || { ok:false };
 }
 
 function hostGroupFromUrl(u){
@@ -173,7 +158,7 @@ function isTemporaryUrl(u){
 }
 async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
   try{
-    async function retryInject(tabId, tries=5, gap=600){
+    async function retryInject(tabId, tries=6, gap=900){
       for(let i=0;i<tries;i++){
         const r = await injectFlow(tabId, text, doSend);
         if(r && (r.wrote||r.sent)) return r;
@@ -196,7 +181,7 @@ async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
         return (bL - aL) || (bA - aA) || 0;
       });
       for(const t of order){
-        const r = await retryInject(t.id, 5, 600);
+        const r = await retryInject(t.id, 6, 900);
         if(r && (r.wrote||r.sent)) return r;
       }
     }catch(e){}
@@ -204,15 +189,15 @@ async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
         let attempts = 0;
-        const maxAttempts = 6;
+        const maxAttempts = 10;
         const tick = async () => {
           attempts++;
           const rr = await injectFlow(tabId, text, doSend);
           if(rr && (rr.wrote||rr.sent)){ resolve(rr); return; }
           if(attempts>=maxAttempts){ resolve(rr||{ok:false}); return; }
-          setTimeout(tick, 800);
+          setTimeout(tick, 1000);
         };
-        setTimeout(tick, 1200);
+        setTimeout(tick, 1500);
       };
       const fallbackToTab = () => {
         chrome.tabs.create({ url: primary, active: true }, (nt)=>{ if(nt?.id) onReady(nt.id); else resolve({ ok:false, error:'无法创建标签页' }); });
@@ -254,12 +239,9 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
           const primHost = new URL(prim).host;
           const altHost = primHost==='chatgpt.com' ? 'chat.openai.com' : 'chatgpt.com';
           const alt = prim.replace(primHost, altHost);
-          // try preferred variant first, both hosts
           candidates.push(prim);
           if(alt!==prim) candidates.push(alt);
-          // if temp preferred but no temp tab exists, we'll open prim anyway; if not temp, regular handled above
           if(temp){
-            // also add regular counterparts only after temp attempts fail
             const regPrim = regular;
             const regAlt = regPrim.replace(new URL(regPrim).host, altHost);
             if(!candidates.includes(regPrim)) candidates.push(regPrim);
