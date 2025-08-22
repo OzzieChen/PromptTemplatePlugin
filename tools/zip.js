@@ -19,14 +19,14 @@ function zip(){
 	try{
 		if(fs.existsSync(stagingParent)) fs.rmSync(stagingParent, { recursive:true, force:true });
 		fs.mkdirSync(stagingParent);
-		fs.mkdirSync(stagingDir);
-		// copy to staging/edge-prompt-templates
-		execFileSync('cp', ['-a', path.join(root, 'edge-prompt-templates') + '/.', stagingDir], { });
-		// touch all files/dirs to current time
-		execFileSync('find', ['edge-prompt-templates', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
-		// zip the folder with top-level edge-prompt-templates
+		fs.mkdirSync(stagingDir, { recursive:true });
+		execFileSync('cp', ['-a', path.join(root, 'edge-prompt-templates') + '/.', stagingDir], {});
+		// touch directories first, then files, to current time
+		execFileSync('find', ['edge-prompt-templates', '-type', 'd', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
+		execFileSync('find', ['edge-prompt-templates', '-type', 'f', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
 		if(fs.existsSync(out)) fs.rmSync(out);
-		execFileSync('zip', ['-r', out, 'edge-prompt-templates'], { stdio: 'inherit', cwd: stagingParent });
+		// -D: do not create directory entries (some unzip tools will assign current time to created dirs)
+		execFileSync('zip', ['-r', '-D', out, 'edge-prompt-templates'], { stdio: 'inherit', cwd: stagingParent });
 		console.log('Created', out);
 	} catch(e){
 		console.error('zip failed:', e.message);
