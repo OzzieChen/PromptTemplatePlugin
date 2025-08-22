@@ -1,5 +1,5 @@
 
-console.log('[PTS] content v2.4.8.2 up');
+console.log('[PTS] content v2.4.8 up');
 chrome.runtime.onMessage.addListener((m, s, send) => {
   if (m?.type !== 'FILL_AND_SEND') return;
   const text = m.text || '', doSend = !!m.send;
@@ -29,24 +29,11 @@ chrome.runtime.onMessage.addListener((m, s, send) => {
   function setV(el, val) {
     if (!el) return false;
     const t = el.tagName?.toLowerCase();
-    try{
-      if (t === 'textarea' || t==='input') {
-        const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')?.set
-          || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')?.set;
-        if(setter){ setter.call(el, val); } else { el.value = val; }
-        el.focus();
-        el.dispatchEvent(new InputEvent('input', { bubbles: true, data: val }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        return true;
-      }
-      if (el.getAttribute && el.getAttribute('contenteditable') === 'true') {
-        el.focus(); document.execCommand('selectAll', false, null); document.execCommand('insertText', false, val);
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        return true;
-      }
-      el.focus(); el.textContent = val; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); return true;
-    }catch(e){}
+    if (t === 'textarea') { el.focus(); el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); return true; }
+    if (el.getAttribute && el.getAttribute('contenteditable') === 'true') {
+      el.focus(); document.execCommand('selectAll', false, null); document.execCommand('insertText', false, val); return true;
+    }
+    try { el.focus(); el.textContent = val; el.dispatchEvent(new Event('input', { bubbles: true })); return true; } catch (e) {}
     return false;
   }
   const el = findInTree(document) || document.activeElement;
@@ -54,18 +41,17 @@ chrome.runtime.onMessage.addListener((m, s, send) => {
   let sent = false;
   if (wrote && doSend) {
     setTimeout(() => {
-      const btn = document.querySelector('button[aria-label="Send"],button[data-testid="send-button"],button[type="submit"],button[aria-label*="发送"],button[aria-label*="send" i]');
+      const btn = document.querySelector('button[aria-label="Send"],button[data-testid="send-button"],button[type="submit"]');
       if (btn && !btn.disabled) { btn.click(); sent = true; }
       else {
         const o = { key:'Enter', code:'Enter', which:13, keyCode:13, bubbles:true };
         (el||document.activeElement)?.dispatchEvent(new KeyboardEvent('keydown', o));
         (el||document.activeElement)?.dispatchEvent(new KeyboardEvent('keypress', o));
         (el||document.activeElement)?.dispatchEvent(new KeyboardEvent('keyup', o));
-        if(el && el.form){ el.form.requestSubmit?.(); el.form.dispatchEvent(new Event('submit', { bubbles:true, cancelable:true })); }
         sent = true;
       }
       try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
-    }, 260);
+    }, 300);
     return true;
   }
   try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
