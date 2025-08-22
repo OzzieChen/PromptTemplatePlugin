@@ -12,25 +12,27 @@ function zip(){
 	const version = readVersion();
 	const root = path.resolve(__dirname, '..');
 	const dist = path.join(root, 'dist');
-	const staging = path.join(root, `.staging-edge-${Date.now()}`);
+	const stagingParent = path.join(root, `.staging-edge-${Date.now()}`);
+	const stagingDir = path.join(stagingParent, 'edge-prompt-templates');
 	const out = path.join(dist, `edge-prompt-templates-v${version}.zip`);
 	if(!fs.existsSync(dist)) fs.mkdirSync(dist);
 	try{
-		if(fs.existsSync(staging)) fs.rmSync(staging, { recursive:true, force:true });
-		fs.mkdirSync(staging);
-		// copy to staging
-		execFileSync('cp', ['-a', 'edge-prompt-templates/.', staging], { cwd: root });
+		if(fs.existsSync(stagingParent)) fs.rmSync(stagingParent, { recursive:true, force:true });
+		fs.mkdirSync(stagingParent);
+		fs.mkdirSync(stagingDir);
+		// copy to staging/edge-prompt-templates
+		execFileSync('cp', ['-a', path.join(root, 'edge-prompt-templates') + '/.', stagingDir], { });
 		// touch all files/dirs to current time
-		execFileSync('find', ['.', '-exec', 'touch', '{}', '+'], { cwd: staging });
-		// zip staging content as root folder edge-prompt-templates
+		execFileSync('find', ['edge-prompt-templates', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
+		// zip the folder with top-level edge-prompt-templates
 		if(fs.existsSync(out)) fs.rmSync(out);
-		execFileSync('zip', ['-r', out, '.'], { stdio: 'inherit', cwd: staging });
+		execFileSync('zip', ['-r', out, 'edge-prompt-templates'], { stdio: 'inherit', cwd: stagingParent });
 		console.log('Created', out);
 	} catch(e){
 		console.error('zip failed:', e.message);
 		process.exit(1);
 	} finally {
-		try{ fs.rmSync(staging, { recursive:true, force:true }); }catch(e){}
+		try{ fs.rmSync(stagingParent, { recursive:true, force:true }); }catch(e){}
 	}
 }
 
