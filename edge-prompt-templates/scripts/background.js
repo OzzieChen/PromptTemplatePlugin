@@ -19,16 +19,22 @@ async function injectFlow(tabId, text, doSend){
       'textarea[data-testid="prompt-textarea"]',
       'form textarea',
       'div[data-testid="composer"] textarea',
+      'div[data-testid="prompt-textarea"]',
       'textarea[placeholder*="Message"]',
       'div[contenteditable="true"][role="textbox"]',
+      'div[contenteditable="true"]',
       '[role="textbox"]',
-      'textarea'
+      'textarea',
+      'input[type="text"]',
+      'input[type="search"]'
     ];
     const SEND = [
       'button[data-testid="send-button"]',
       'button[aria-label="Send"]',
       'button[aria-label="Send message"]',
       'button[aria-label*="发送"]',
+      'button[aria-label*="送出"]',
+      'button[aria-label*="发送消息"]',
       'button[aria-label*="send" i]',
       'button[type="submit"]',
       'form button:not([disabled])'
@@ -47,6 +53,13 @@ async function injectFlow(tabId, text, doSend){
         return null;
       }
       return dfs(root||document);
+    }
+    function isEditable(el){
+      if(!el) return false;
+      const tag=(el.tagName||'').toLowerCase();
+      if(tag==='textarea' || tag==='input') return true;
+      if(el.getAttribute && el.getAttribute('contenteditable')==='true') return true;
+      return false;
     }
     function setNativeValueAndEvents(el, val){
       if(!el) return false;
@@ -73,17 +86,6 @@ async function injectFlow(tabId, text, doSend){
         }
         return false;
       }catch(e){ return false; }
-    }
-    function clearDrafts(){
-      try{
-        const ls = window.localStorage;
-        const keys = [];
-        for(let i=0;i<ls.length;i++){
-          const k = ls.key(i) || '';
-          if(/(draft|input|composer|prompt|oai|chatgpt)/i.test(k)) keys.push(k);
-        }
-        keys.forEach(k=>ls.removeItem(k));
-      }catch(e){}
     }
     function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
     async function trySend(inputEl){
@@ -119,7 +121,8 @@ async function injectFlow(tabId, text, doSend){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
-          const el=findEditable(document);
+          const found=findEditable(document);
+          const el = found || (document.activeElement && isEditable(document.activeElement) ? document.activeElement : null);
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
           setTimeout(tick, 300);
@@ -128,7 +131,6 @@ async function injectFlow(tabId, text, doSend){
     }
     const el = await waitForComposer(24000);
     const wrote = !!el && setNativeValueAndEvents(el, text);
-    if(wrote){ clearDrafts(); }
     let sent = false;
     if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
