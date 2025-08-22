@@ -78,6 +78,7 @@ html,body{min-height:100%;height:auto}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:8px;border:2px solid var(--scrollbar-track)}
 /* Checkbox styling and alignment */
 .field-flags label.small{display:inline-flex;align-items:center;gap:6px}
+#tmpChat{width:18px;height:18px}
 input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1px solid var(--line);border-radius:4px;background:var(--card);display:inline-block;vertical-align:middle}
 input[type="checkbox"]:checked{background:var(--accent);border-color:var(--accent);background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="white" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg>');background-position:center;background-repeat:no-repeat;background-size:12px 12px}
 input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
@@ -132,7 +133,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
     <div class="view-nav"><button id="back2" class="back">← 返回</button><div id="fillTitle" class="title"></div></div>
     <div class="card">
       <div id="inputs"></div>
-      <div class="row"><label class="small" for="tmpChat">临时对话（仅当前模板）</label><input id="tmpChat" type="checkbox" style="width:auto"></div>
+      <div class="row"><label class="small" for="tmpChat">临时对话（仅当前模板）</label><input id="tmpChat" type="checkbox"></div>
       <div class="row"><button id="clear">清空</button><button id="copy">复制</button><button id="insert">插入</button><button id="send" class="primary">插入并发送</button></div>
     </div>
     <div class="card" style="margin-top:12px;">
