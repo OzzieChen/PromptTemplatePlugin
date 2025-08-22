@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.10.1 up');
+console.log('[PTS] background v2.4.10.2 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -136,27 +136,43 @@ async function injectFlow(tabId, text, doSend){
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
-  // fallback: ask content script to handle
+  // guarded fallback: only message content script when host matches
   try{
+    const tab = await new Promise((resolve)=>{
+      try{ chrome.tabs.get(tabId, (t)=>resolve(t||null)); }catch(e){ resolve(null); }
+    });
+    const url = tab?.url || '';
+    const okHost = /^(https:\/\/)(chatgpt\.com|chat\.openai\.com|www\.kimi\.com|kimi\.moonshot\.cn|chat\.deepseek\.com)\//.test(url||'');
+    if(!okHost) return res || { ok:false };
     const r = await new Promise((resolve)=>{
-      chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>resolve(rr||{ok:false}));
+      try{
+        chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>resolve(rr||{ok:false}));
+      }catch(e){ resolve({ ok:false }); }
     });
     return r || { ok:false };
   }catch(e){ return res || { ok:false, error:String(e) }; }
 }
 
-async function ensureOpenAndInject(primary, text, doSend){
+function hostGroupFromUrl(u){
   try{
-    function hostGroupFromUrl(u){
-      try{
-        const h=new URL(u).host;
-        if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
-        if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
-        if(h==='chat.deepseek.com') return 'deepseek';
-        return h;
-      }catch(e){ return ''; }
-    }
-    const sameEngine = (u1, u2) => hostGroupFromUrl(u1) === hostGroupFromUrl(u2);
+    const h=new URL(u).host;
+    if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
+    if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
+    if(h==='chat.deepseek.com') return 'deepseek';
+    return h;
+  }catch(e){ return ''; }
+}
+function sameEngine(u1, u2){ return hostGroupFromUrl(u1) === hostGroupFromUrl(u2); }
+function isTemporaryUrl(u){
+  try{
+    const url = new URL(u);
+    const grp = hostGroupFromUrl(u);
+    if(grp==='chatgpt') return url.searchParams.get('temporary-chat') === 'true';
+    return false;
+  }catch(e){ return false; }
+}
+async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
+  try{
     async function retryInject(tabId, tries=5, gap=600){
       for(let i=0;i<tries;i++){
         const r = await injectFlow(tabId, text, doSend);
@@ -165,33 +181,26 @@ async function ensureOpenAndInject(primary, text, doSend){
       }
       return null;
     }
-    // Try best existing tabs first (works when triggered from side panel)
+    // Prefer existing tabs first, respecting temporary preference
     try{
       const allTabs = await chrome.tabs.query({});
       const lastWin = await chrome.windows.getLastFocused({ populate:false }).catch(()=>null);
-      const targetEngine = hostGroupFromUrl(primary);
-      const candidates = allTabs.filter(t=> t.url && sameEngine(t.url, primary));
-      // sort: last-focused & active first, then active anywhere, then last-focused others, then rest
-      candidates.sort((a,b)=>{
+      const tabsSameEngine = allTabs.filter(t=> t.url && sameEngine(t.url, primary));
+      const tempTabs = tabsSameEngine.filter(t=> isTemporaryUrl(t.url));
+      const regTabs = tabsSameEngine.filter(t=> !isTemporaryUrl(t.url));
+      const order = preferTemporary ? [...tempTabs, ...regTabs] : [...regTabs, ...tempTabs];
+      order.sort((a,b)=>{
         const aL = (lastWin && a.windowId===lastWin.id) ? 1:0;
         const bL = (lastWin && b.windowId===lastWin.id) ? 1:0;
         const aA = a.active ? 1:0; const bA = b.active ? 1:0;
         return (bL - aL) || (bA - aA) || 0;
       });
-      for(const t of candidates){
+      for(const t of order){
         const r = await retryInject(t.id, 5, 600);
         if(r && (r.wrote||r.sent)) return r;
       }
     }catch(e){}
-    // Fallback: if current active in currentWindow matches, try it
-    try{
-      const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
-      if(active?.id && active?.url && sameEngine(active.url, primary)){
-        const r = await retryInject(active.id, 5, 600);
-        if(r && (r.wrote || r.sent)) return r;
-      }
-    }catch(e){}
-    // open new window or tab and inject with retries
+    // open new window or tab and inject with retries to the requested primary URL
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
         let attempts = 0;
@@ -241,26 +250,30 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
         const isChatgptGroup = (u)=>{ try{ const h=new URL(u).host; return (h==='chatgpt.com'||h==='chat.openai.com'); }catch(e){ return false; } };
         const candidates = [];
         if(isChatgptGroup(regular)){
-          const base1 = 'https://chatgpt.com';
-          const base2 = 'https://chat.openai.com';
           const prim = temp ? temporary : regular;
           const primHost = new URL(prim).host;
           const altHost = primHost==='chatgpt.com' ? 'chat.openai.com' : 'chatgpt.com';
           const alt = prim.replace(primHost, altHost);
+          // try preferred variant first, both hosts
           candidates.push(prim);
           if(alt!==prim) candidates.push(alt);
-          // also try regular counterpart if temp fails
+          // if temp preferred but no temp tab exists, we'll open prim anyway; if not temp, regular handled above
           if(temp){
-            const primReg = regular;
-            const altReg = primReg.replace(new URL(primReg).host, altHost);
-            if(!candidates.includes(primReg)) candidates.push(primReg);
-            if(!candidates.includes(altReg)) candidates.push(altReg);
+            // also add regular counterparts only after temp attempts fail
+            const regPrim = regular;
+            const regAlt = regPrim.replace(new URL(regPrim).host, altHost);
+            if(!candidates.includes(regPrim)) candidates.push(regPrim);
+            if(!candidates.includes(regAlt)) candidates.push(regAlt);
           }
         } else {
           candidates.push(temp ? temporary : regular);
         }
         let res=null;
-        for(const url of candidates){ res = await ensureOpenAndInject(url, text, doSend); if(res && (res.wrote||res.sent)) break; }
+        for(const url of candidates){
+          const preferTemp = temp && isChatgptGroup(url);
+          res = await ensureOpenAndInject(url, text, doSend, preferTemp);
+          if(res && (res.wrote||res.sent)) break;
+        }
         send(res && (res.wrote || res.sent) ? { ok:true, wrote:!!res.wrote, sent:!!res.sent } : { ok:false, error:'注入失败（未找到输入框或发送失败）' });
       }catch(e){ send({ok:false,error:String(e)}); }
     })(); return true;
