@@ -1,0 +1,31 @@
+name: Build Extension Zip
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - cursor/fix-edge-insert-bug-and-update-readme-7f1c
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: ver
+        run: |
+          v=$(jq -r '.version' edge-prompt-templates/manifest.json)
+          echo "version=$v" >> $GITHUB_OUTPUT
+
+      - name: Pack edge-prompt-templates only
+        run: |
+          zip -r "edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip" edge-prompt-templates -x "edge-prompt-templates/.git/*" "edge-prompt-templates/.DS_Store"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          if-no-files-found: error
