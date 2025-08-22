@@ -10,7 +10,7 @@ async function waitForCards(page){
 async function ensureDir(p){ if(!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true }); }
 
 (async () => {
-  const assetsDir = path.resolve(__dirname, '..', 'edge-prompt-templates', 'assets');
+  const assetsDir = path.resolve(__dirname, '..', 'assets');
   await ensureDir(assetsDir);
 
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox','--disable-setuid-sandbox'] });
