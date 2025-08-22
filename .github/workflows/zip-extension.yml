@@ -7,6 +7,9 @@ on:
       - main
       - cursor/fix-edge-insert-bug-and-update-readme-7f1c
 
+permissions:
+  contents: write
+
 jobs:
   zip:
     runs-on: ubuntu-latest
@@ -33,3 +36,12 @@ jobs:
           name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
           path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
           if-no-files-found: error
+
+      - name: Publish GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          draft: false
+          prerelease: false
+          files: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
