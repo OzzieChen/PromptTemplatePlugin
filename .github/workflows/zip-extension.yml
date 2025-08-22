@@ -13,19 +13,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Read version
         id: ver
         run: |
-          v=$(jq -r '.version' edge-prompt-templates/manifest.json)
-          echo "version=$v" >> $GITHUB_OUTPUT
+          echo "version=$(node -p "require('./edge-prompt-templates/manifest.json').version")" >> $GITHUB_OUTPUT
 
-      - name: Pack edge-prompt-templates only
+      - name: Prepare versioned folder (only extension)
         run: |
-          zip -r "edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip" edge-prompt-templates -x "edge-prompt-templates/.git/*" "edge-prompt-templates/.DS_Store"
+          rm -rf edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          cp -r edge-prompt-templates edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          test -f edge-prompt-templates-v${{ steps.ver.outputs.version }}/manifest.json
 
-      - name: Upload artifact
+      - name: Upload artifact (folder only)
         uses: actions/upload-artifact@v4
         with:
           name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}/
           if-no-files-found: error
