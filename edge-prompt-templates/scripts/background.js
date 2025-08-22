@@ -172,7 +172,7 @@ function isTemporaryUrl(u){
 }
 async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
   try{
-    async function retryInject(tabId, tries=6, gap=900){
+    async function retryInject(tabId, tries=4, gap=500){
       for(let i=0;i<tries;i++){
         const r = await injectFlow(tabId, text, doSend);
         if(r && (r.wrote||r.sent)) return r;
@@ -195,7 +195,10 @@ async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
         return (bL - aL) || (bA - aA) || 0;
       });
       for(const t of order){
-        const r = await retryInject(t.id, 6, 900);
+        if(preferTemporary && !isTemporaryUrl(t.url)) break; // do not inject regular when temp requested
+        try{ await chrome.windows.update(t.windowId, { focused:true }); }catch(e){}
+        try{ await chrome.tabs.update(t.id, { active:true }); }catch(e){}
+        const r = await retryInject(t.id, 4, 500);
         if(r && (r.wrote||r.sent)) return r;
       }
     }catch(e){}
@@ -203,15 +206,15 @@ async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
         let attempts = 0;
-        const maxAttempts = 10;
+        const maxAttempts = 6;
         const tick = async () => {
           attempts++;
           const rr = await injectFlow(tabId, text, doSend);
           if(rr && (rr.wrote||rr.sent)){ resolve(rr); return; }
           if(attempts>=maxAttempts){ resolve(rr||{ok:false}); return; }
-          setTimeout(tick, 1000);
+          setTimeout(tick, 700);
         };
-        setTimeout(tick, 1500);
+        setTimeout(tick, 900);
       };
       const fallbackToTab = () => {
         chrome.tabs.create({ url: primary, active: true }, (nt)=>{ if(nt?.id) onReady(nt.id); else resolve({ ok:false, error:'无法创建标签页' }); });

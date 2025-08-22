@@ -260,6 +260,7 @@
       const urls={ regular: settings.regularURL, temporary: settings.temporaryURL };
       if(act==='copy'){ navigator.clipboard.writeText(txt).then(()=>toast('已复制')); }
       else{
+        toast('处理中…');
         safeSendMessage({ type:'INJECT_TO_CHATGPT', text:txt, send:(act==='send'), tmp:!!t.tmpChat, urls }, (res)=>{
           if(res?.ok){
             if(act==='send'){
