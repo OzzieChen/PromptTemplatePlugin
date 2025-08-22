@@ -27,13 +27,9 @@ jobs:
         run: |
           test -f edge-prompt-templates/manifest.json
 
-      - name: Create single-layer zip (first layer is folder)
-        run: |
-          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
-
-      - name: Upload artifact (zip)
+      - name: Upload artifact (folder; first layer is edge-prompt-templates)
         uses: actions/upload-artifact@v4
         with:
           name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          path: edge-prompt-templates
           if-no-files-found: error
