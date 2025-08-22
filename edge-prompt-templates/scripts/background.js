@@ -15,7 +15,9 @@ async function injectFlow(tabId, text, doSend){
   // keep original executeScript path; add fallback to content script messaging if wrote is false
   const res = await execOnTab(tabId, [text, !!doSend], async (text, doSend)=>{
     const EDITABLE = [
+      'textarea#prompt-textarea',
       'textarea[data-testid="prompt-textarea"]',
+      'form textarea',
       'div[data-testid="composer"] textarea',
       'textarea[placeholder*="Message"]',
       'div[contenteditable="true"][role="textbox"]',
@@ -25,6 +27,7 @@ async function injectFlow(tabId, text, doSend){
     const SEND = [
       'button[data-testid="send-button"]',
       'button[aria-label="Send"]',
+      'button[aria-label="Send message"]',
       'button[aria-label*="发送"]',
       'button[aria-label*="send" i]',
       'button[type="submit"]',
@@ -35,7 +38,7 @@ async function injectFlow(tabId, text, doSend){
       function dfs(node){
         if(!node || visited.has(node)) return null;
         visited.add(node);
-        for(const sel of EDITABLE){ try{ const el=node.querySelector?.(sel); if(el) return el; }catch(e){} }
+        for(const sel of EDITABLE){ try{ const el=node.querySelector?.(sel); if(el && el.offsetParent!==null) return el; }catch(e){} }
         const all=node.querySelectorAll?node.querySelectorAll('*'):[];
         for(const n of all){
           if(n.shadowRoot){ const e=dfs(n.shadowRoot); if(e) return e; }
@@ -50,6 +53,7 @@ async function injectFlow(tabId, text, doSend){
       const tag=(el.tagName||'').toLowerCase();
       try{
         if(tag==='textarea' || tag==='input'){
+          el.dispatchEvent(new InputEvent('beforeinput', { bubbles:true, inputType:'insertFromPaste', data:val }));
           const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')?.set
             || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')?.set;
           if(setter){ setter.call(el, val); }
@@ -99,27 +103,26 @@ async function injectFlow(tabId, text, doSend){
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keydown', k));
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keypress', k));
         (inputEl||document.activeElement)?.dispatchEvent(new KeyboardEvent('keyup', k));
-        // Also try form submit if available
         if(inputEl && inputEl.form){ inputEl.form.requestSubmit?.(); inputEl.form.dispatchEvent(new Event('submit', { bubbles:true, cancelable:true })); }
         return true;
       }catch(e){}
       return false;
     }
-    async function waitForComposer(ms=20000){
+    async function waitForComposer(ms=24000){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
           const el=findEditable(document) || document.activeElement;
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
-          setTimeout(tick, 250);
+          setTimeout(tick, 300);
         }; tick();
       });
     }
-    const el = await waitForComposer(22000);
+    const el = await waitForComposer(24000);
     const wrote = !!el && setNativeValueAndEvents(el, text);
     let sent = false;
-    if(wrote && doSend){ await sleep(200); sent = await trySend(el); }
+    if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
@@ -145,19 +148,31 @@ async function ensureOpenAndInject(primary, text, doSend){
       }catch(e){ return ''; }
     }
     const sameEngine = (u1, u2) => hostGroupFromUrl(u1) === hostGroupFromUrl(u2);
+    async function retryInject(tabId, tries=5, gap=600){
+      for(let i=0;i<tries;i++){
+        const r = await injectFlow(tabId, text, doSend);
+        if(r && (r.wrote||r.sent)) return r;
+        await new Promise(res=>setTimeout(res, gap));
+      }
+      return null;
+    }
     if(active?.id && active?.url && sameEngine(active.url, primary)){
-      const r = await injectFlow(active.id, text, doSend);
+      const r = await retryInject(active.id, 5, 600);
       if(r && (r.wrote || r.sent)) return r;
     }
-    // open new window or tab and inject
+    // open new window or tab and inject with retries
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
-        const handler = async (tabIdUpdated, info) => {
-          if(tabIdUpdated !== tabId || info.status !== 'complete') return;
-          chrome.tabs.onUpdated.removeListener(handler);
-          setTimeout(async ()=>{ const rr = await injectFlow(tabId, text, doSend); resolve(rr || { ok:false }); }, 1200);
+        let attempts = 0;
+        const maxAttempts = 6;
+        const tick = async () => {
+          attempts++;
+          const rr = await injectFlow(tabId, text, doSend);
+          if(rr && (rr.wrote||rr.sent)){ resolve(rr); return; }
+          if(attempts>=maxAttempts){ resolve(rr||{ok:false}); return; }
+          setTimeout(tick, 800);
         };
-        chrome.tabs.onUpdated.addListener(handler);
+        setTimeout(tick, 1200);
       };
       const fallbackToTab = () => {
         chrome.tabs.create({ url: primary, active: true }, (nt)=>{ if(nt?.id) onReady(nt.id); else resolve({ ok:false, error:'无法创建标签页' }); });
