@@ -112,7 +112,7 @@ async function injectFlow(tabId, text, doSend){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
-          const el=findEditable(document) || document.activeElement;
+          const el=findEditable(document);
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
           setTimeout(tick, 300);

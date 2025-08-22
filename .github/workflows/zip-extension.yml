@@ -4,6 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
+      - main
       - cursor/fix-edge-insert-bug-and-update-readme-7f1c
 
 jobs:
@@ -12,11 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Read version
         id: ver
@@ -27,9 +23,13 @@ jobs:
         run: |
           test -f edge-prompt-templates/manifest.json
 
-      - name: Upload artifact (folder; first layer is edge-prompt-templates)
+      - name: Create single-layer zip (first layer is folder)
+        run: |
+          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
+
+      - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
         with:
           name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          path: edge-prompt-templates
+          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
           if-no-files-found: error
