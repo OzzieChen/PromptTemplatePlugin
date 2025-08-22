@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.5）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.6）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -38,4 +38,28 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.4.5`
+- 当前版本：`2.4.8`
+
+### 截图（示例尺寸与说明）
+- 弹出页尺寸：宽 560px（以下截图均按真实弹窗宽度）
+- 首页（模板库/搜索）：560×860 PNG
+- 模板详情页（填充/预览/插入按钮）：560×980 PNG
+- 新建/编辑页面（字段设计器）：560×980 PNG
+- 设置页（提供商与主题）：560×900 PNG
+
+#### 示例截图（弹窗尺寸）
+- 首页：`assets/home-popup.png`
+- 模板详情页：`assets/detail-popup.png`
+- 新建/编辑页：`assets/edit-popup.png`
+- 设置页：`assets/settings-popup.png`
+
+<div>
+  <p><strong>首页（弹窗）</strong></p>
+  <img src="assets/home-popup.png" alt="首页（模板库/搜索，弹窗尺寸）" width="560">
+  <p><strong>模板详情页（弹窗）</strong></p>
+  <img src="assets/detail-popup.png" alt="模板详情页（弹窗尺寸）" width="560">
+  <p><strong>新建/编辑页（弹窗）</strong></p>
+  <img src="assets/edit-popup.png" alt="新建/编辑页（弹窗尺寸）" width="560">
+  <p><strong>设置页（弹窗）</strong></p>
+  <img src="assets/settings-popup.png" alt="设置页（弹窗尺寸）" width="560">
+</div>

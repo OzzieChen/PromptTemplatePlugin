@@ -1,5 +1,5 @@
 
-console.log('[PTS] content v2.4.5 up');
+console.log('[PTS] content v2.4.8 up');
 chrome.runtime.onMessage.addListener((m, s, send) => {
   if (m?.type !== 'FILL_AND_SEND') return;
   const text = m.text || '', doSend = !!m.send;
@@ -50,10 +50,10 @@ chrome.runtime.onMessage.addListener((m, s, send) => {
         (el||document.activeElement)?.dispatchEvent(new KeyboardEvent('keyup', o));
         sent = true;
       }
-      send({ ok: !!wrote, wrote: !!wrote, sent: !!sent });
+      try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
     }, 300);
     return true;
   }
-  send({ ok: !!wrote, wrote: !!wrote, sent: !!sent });
+  try{ send && send({ ok: !!wrote, wrote: !!wrote, sent: !!sent }); }catch(e){}
   return true;
 });

@@ -1,0 +1,29 @@
+name: Package edge-prompt-templates (folder artifact)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - cursor/fix-edge-insert-bug-and-update-readme-7f1c
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate folder
+        run: |
+          test -d edge-prompt-templates
+          test -f edge-prompt-templates/manifest.json
+
+      - name: Upload artifact preserving folder root
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-prompt-templates
+          path: |
+            edge-prompt-templates/**
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7

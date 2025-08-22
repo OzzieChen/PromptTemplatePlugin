@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#f6f7f9"/>
+  <rect x="40" y="40" width="1120" height="820" rx="10" fill="#ffffff" stroke="#dcdfe6"/>
+  <text x="60" y="90" font-size="28" fill="#333">新建 / 编辑页面（字段设计器）示意图</text>
+  <rect x="60" y="120" width="500" height="60" rx="8" fill="#fff" stroke="#e5e7eb"/>
+  <text x="70" y="155" font-size="14" fill="#777">模板名称输入框</text>
+  <rect x="60" y="200" width="700" height="220" rx="8" fill="#fff" stroke="#e5e7eb"/>
+  <text x="70" y="230" font-size="14" fill="#777">模板正文编辑器</text>
+  <rect x="60" y="440" width="1070" height="360" rx="8" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="70" y="470" font-size="16" fill="#555">字段设计器</text>
+  <text x="70" y="500" font-size="14" fill="#777">字段 1 · Text · 允许自定义 / 必填</text>
+  <text x="70" y="530" font-size="14" fill="#777">字段 2 · Select · 候选项 / 默认值</text>
+  <text x="60" y="860" font-size="14" fill="#888">建议尺寸：1200×900（此图为占位符，替换为真实截图）</text>
+</svg>

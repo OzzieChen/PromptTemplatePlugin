@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f6f7f9"/>
+  <rect x="40" y="40" width="1120" height="720" rx="10" fill="#ffffff" stroke="#dcdfe6"/>
+  <text x="60" y="90" font-size="28" fill="#333">首页（模板库/搜索）示意图</text>
+  <rect x="60" y="120" width="400" height="36" rx="6" fill="#eef2f7" stroke="#d1d7e0"/>
+  <text x="70" y="145" font-size="16" fill="#666">搜索框</text>
+  <g>
+    <rect x="60" y="180" width="330" height="160" rx="8" fill="#fafafa" stroke="#e5e7eb"/>
+    <text x="80" y="210" font-size="18" fill="#444">模板卡片 A</text>
+    <text x="80" y="240" font-size="14" fill="#777">点击进入填充或编辑</text>
+  </g>
+  <g>
+    <rect x="410" y="180" width="330" height="160" rx="8" fill="#fafafa" stroke="#e5e7eb"/>
+    <text x="430" y="210" font-size="18" fill="#444">模板卡片 B</text>
+  </g>
+  <g>
+    <rect x="760" y="180" width="330" height="160" rx="8" fill="#fafafa" stroke="#e5e7eb"/>
+    <text x="780" y="210" font-size="18" fill="#444">模板卡片 C</text>
+  </g>
+  <text x="60" y="760" font-size="14" fill="#888">建议尺寸：1200×800（此图为占位符，替换为真实截图）</text>
+</svg>
