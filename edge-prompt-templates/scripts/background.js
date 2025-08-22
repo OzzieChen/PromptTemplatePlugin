@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.10.4 up');
+console.log('[PTS] background v2.4.10.5 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
