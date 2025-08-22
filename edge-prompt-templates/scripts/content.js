@@ -33,11 +33,21 @@ chrome.runtime.onMessage.addListener((m, s, send) => {
     if (el.getAttribute && el.getAttribute('contenteditable') === 'true') {
       el.focus(); document.execCommand('selectAll', false, null); document.execCommand('insertText', false, val); return true;
     }
-    try { el.focus(); el.textContent = val; el.dispatchEvent(new Event('input', { bubbles: true })); return true; } catch (e) {}
     return false;
   }
-  const el = findInTree(document) || document.activeElement;
+  const el = findInTree(document);
   const wrote = setV(el, text);
+  if (wrote) {
+    try {
+      const ls = window.localStorage;
+      const toRemove = [];
+      for (let i = 0; i < ls.length; i++) {
+        const k = ls.key(i) || '';
+        if (/(draft|input|composer|prompt)/i.test(k)) toRemove.push(k);
+      }
+      toRemove.forEach(k => ls.removeItem(k));
+    } catch (e) {}
+  }
   let sent = false;
   if (wrote && doSend) {
     setTimeout(() => {

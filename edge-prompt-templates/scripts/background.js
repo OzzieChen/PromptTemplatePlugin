@@ -71,12 +71,19 @@ async function injectFlow(tabId, text, doSend){
           el.dispatchEvent(new Event('change', { bubbles:true }));
           return true;
         }
-        el.focus();
-        el.textContent = val;
-        el.dispatchEvent(new Event('input', { bubbles:true }));
-        el.dispatchEvent(new Event('change', { bubbles:true }));
-        return true;
+        return false;
       }catch(e){ return false; }
+    }
+    function clearDrafts(){
+      try{
+        const ls = window.localStorage;
+        const keys = [];
+        for(let i=0;i<ls.length;i++){
+          const k = ls.key(i) || '';
+          if(/(draft|input|composer|prompt|oai|chatgpt)/i.test(k)) keys.push(k);
+        }
+        keys.forEach(k=>ls.removeItem(k));
+      }catch(e){}
     }
     function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
     async function trySend(inputEl){
@@ -112,7 +119,7 @@ async function injectFlow(tabId, text, doSend){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
-          const el=findEditable(document) || document.activeElement;
+          const el=findEditable(document);
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
           setTimeout(tick, 300);
@@ -121,6 +128,7 @@ async function injectFlow(tabId, text, doSend){
     }
     const el = await waitForComposer(24000);
     const wrote = !!el && setNativeValueAndEvents(el, text);
+    if(wrote){ clearDrafts(); }
     let sent = false;
     if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
