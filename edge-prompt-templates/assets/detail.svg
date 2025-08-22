@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#f6f7f9"/>
+  <rect x="40" y="40" width="1120" height="820" rx="10" fill="#ffffff" stroke="#dcdfe6"/>
+  <text x="60" y="90" font-size="28" fill="#333">模板详情页（填充 / 预览 / 操作）示意图</text>
+  <text x="60" y="130" font-size="16" fill="#555">模板标题</text>
+  <rect x="60" y="150" width="540" height="280" rx="8" fill="#fff" stroke="#e5e7eb"/>
+  <text x="70" y="180" font-size="14" fill="#777">字段输入区域</text>
+  <text x="640" y="130" font-size="16" fill="#555">Prompt 正文预览</text>
+  <rect x="640" y="150" width="500" height="520" rx="8" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="650" y="180" font-size="14" fill="#777">预览内容…</text>
+  <g>
+    <rect x="60" y="460" width="120" height="36" rx="6" fill="#eaeef7" stroke="#cdd7ef"/>
+    <text x="90" y="485" font-size="14" fill="#444">清空</text>
+    <rect x="190" y="460" width="120" height="36" rx="6" fill="#eaeef7" stroke="#cdd7ef"/>
+    <text x="220" y="485" font-size="14" fill="#444">复制</text>
+    <rect x="320" y="460" width="120" height="36" rx="6" fill="#eaeef7" stroke="#cdd7ef"/>
+    <text x="350" y="485" font-size="14" fill="#444">插入</text>
+    <rect x="450" y="460" width="150" height="36" rx="6" fill="#4f7cff" stroke="#3b67eb"/>
+    <text x="475" y="485" font-size="14" fill="#fff">插入并发送</text>
+  </g>
+  <text x="60" y="860" font-size="14" fill="#888">建议尺寸：1200×900（此图为占位符，替换为真实截图）</text>
+</svg>

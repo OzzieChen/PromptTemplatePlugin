@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.5 up');
+console.log('[PTS] background v2.4.6 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -99,28 +99,31 @@ async function injectFlow(tabId, text, doSend){
 }
 async function ensureOpenAndInject(primary, text, doSend){
   try{
-    const tryTabs = async (tabs)=>{
-      for(const t of tabs){
-        if(!t.url) continue;
-        if(t.url.startsWith(primary)){
-          const r = await injectFlow(t.id, text, doSend);
-          if(r && (r.wrote || r.sent)) return r;
-        }
-      }
-      return null;
-    };
     const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
-    if(active?.id){ const r = await injectFlow(active.id, text, doSend); if(r && (r.wrote || r.sent)) return r; }
-    let r = await tryTabs(await chrome.tabs.query({ currentWindow:true }));
-    if(r) return r;
-    r = await tryTabs(await chrome.tabs.query({}));
-    if(r) return r;
+    function hostGroupFromUrl(u){
+      try{
+        const h=new URL(u).host;
+        if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
+        if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
+        if(h==='chat.deepseek.com') return 'deepseek';
+        return h;
+      }catch(e){ return ''; }
+    }
+    const sameEngine = (u1, u2) => hostGroupFromUrl(u1) === hostGroupFromUrl(u2);
+    if(active?.id && active?.url && sameEngine(active.url, primary)){
+      const r = await injectFlow(active.id, text, doSend);
+      if(r && (r.wrote || r.sent)) return r;
+    }
     return await new Promise((resolve)=>{
-      chrome.tabs.create({ url: primary, active: true }, (nt)=>{
-        const handler = async (tabId, info) => {
-          if(tabId !== nt.id || info.status !== 'complete') return;
+      chrome.windows.create({ url: primary, focused: true, type: 'normal', populate: true }, (win)=>{
+        if(chrome.runtime.lastError){ resolve({ ok:false, error:chrome.runtime.lastError.message }); return; }
+        const createdTab = (win && win.tabs && win.tabs[0]) ? win.tabs[0] : null;
+        const tabId = createdTab ? createdTab.id : undefined;
+        if(!tabId){ resolve({ ok:false, error:'未获取到新窗口标签' }); return; }
+        const handler = async (tabIdUpdated, info) => {
+          if(tabIdUpdated !== tabId || info.status !== 'complete') return;
           chrome.tabs.onUpdated.removeListener(handler);
-          setTimeout(async ()=>{ const rr = await injectFlow(nt.id, text, doSend); resolve(rr || { ok:false }); }, 1200);
+          setTimeout(async ()=>{ const rr = await injectFlow(tabId, text, doSend); resolve(rr || { ok:false }); }, 1200);
         };
         chrome.tabs.onUpdated.addListener(handler);
       });
