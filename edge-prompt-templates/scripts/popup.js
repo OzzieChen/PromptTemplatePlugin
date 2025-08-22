@@ -1,7 +1,7 @@
 
-// v2.4.8 - resilient messaging; scripts/popup.js
+// v2.4.8.1 - resilient messaging; scripts/popup.js
 (function(){
-  console.log('[PTS] popup v2.4.8 up');
+  console.log('[PTS] popup v2.4.8.1 up');
 
   function $(s){ return document.querySelector(s); }
   function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent=msg||''; el.classList.add('show'); setTimeout(()=>{ el.classList.remove('show'); el.textContent=''; }, 1600); }
