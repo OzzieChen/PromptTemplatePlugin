@@ -15,9 +15,13 @@ jobs:
           test -d ./edge-prompt-templates
           test -f ./edge-prompt-templates/manifest.json
 
-      - name: Upload folder artifact (preserve folder root)
+      - name: Create single-layer zip
+        run: |
+          zip -r edge-prompt-templates.zip edge-prompt-templates
+
+      - name: Upload zip artifact (first layer is folder)
         uses: actions/upload-artifact@v4
         with:
           name: edge-prompt-templates
-          path: ./edge-prompt-templates
+          path: edge-prompt-templates.zip
           if-no-files-found: error

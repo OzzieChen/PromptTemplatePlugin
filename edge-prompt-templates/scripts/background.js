@@ -192,8 +192,29 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
         const urls = m.urls || {};
         let regular = urls.regular || 'https://chatgpt.com';
         let temporary = urls.temporary || 'https://chatgpt.com/?temporary-chat=true';
-        const primary = temp ? temporary : regular;
-        const res = await ensureOpenAndInject(primary, text, doSend);
+        const isChatgptGroup = (u)=>{ try{ const h=new URL(u).host; return (h==='chatgpt.com'||h==='chat.openai.com'); }catch(e){ return false; } };
+        const candidates = [];
+        if(isChatgptGroup(regular)){
+          const base1 = 'https://chatgpt.com';
+          const base2 = 'https://chat.openai.com';
+          const prim = temp ? temporary : regular;
+          const primHost = new URL(prim).host;
+          const altHost = primHost==='chatgpt.com' ? 'chat.openai.com' : 'chatgpt.com';
+          const alt = prim.replace(primHost, altHost);
+          candidates.push(prim);
+          if(alt!==prim) candidates.push(alt);
+          // also try regular counterpart if temp fails
+          if(temp){
+            const primReg = regular;
+            const altReg = primReg.replace(new URL(primReg).host, altHost);
+            if(!candidates.includes(primReg)) candidates.push(primReg);
+            if(!candidates.includes(altReg)) candidates.push(altReg);
+          }
+        } else {
+          candidates.push(temp ? temporary : regular);
+        }
+        let res=null;
+        for(const url of candidates){ res = await ensureOpenAndInject(url, text, doSend); if(res && (res.wrote||res.sent)) break; }
         send(res && (res.wrote || res.sent) ? { ok:true, wrote:!!res.wrote, sent:!!res.sent } : { ok:false, error:'注入失败（未找到输入框或发送失败）' });
       }catch(e){ send({ok:false,error:String(e)}); }
     })(); return true;
