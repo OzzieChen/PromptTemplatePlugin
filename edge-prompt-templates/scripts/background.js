@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.10 up');
+console.log('[PTS] background v2.4.10.1 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -147,7 +147,6 @@ async function injectFlow(tabId, text, doSend){
 
 async function ensureOpenAndInject(primary, text, doSend){
   try{
-    const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
     function hostGroupFromUrl(u){
       try{
         const h=new URL(u).host;
@@ -166,10 +165,32 @@ async function ensureOpenAndInject(primary, text, doSend){
       }
       return null;
     }
-    if(active?.id && active?.url && sameEngine(active.url, primary)){
-      const r = await retryInject(active.id, 5, 600);
-      if(r && (r.wrote || r.sent)) return r;
-    }
+    // Try best existing tabs first (works when triggered from side panel)
+    try{
+      const allTabs = await chrome.tabs.query({});
+      const lastWin = await chrome.windows.getLastFocused({ populate:false }).catch(()=>null);
+      const targetEngine = hostGroupFromUrl(primary);
+      const candidates = allTabs.filter(t=> t.url && sameEngine(t.url, primary));
+      // sort: last-focused & active first, then active anywhere, then last-focused others, then rest
+      candidates.sort((a,b)=>{
+        const aL = (lastWin && a.windowId===lastWin.id) ? 1:0;
+        const bL = (lastWin && b.windowId===lastWin.id) ? 1:0;
+        const aA = a.active ? 1:0; const bA = b.active ? 1:0;
+        return (bL - aL) || (bA - aA) || 0;
+      });
+      for(const t of candidates){
+        const r = await retryInject(t.id, 5, 600);
+        if(r && (r.wrote||r.sent)) return r;
+      }
+    }catch(e){}
+    // Fallback: if current active in currentWindow matches, try it
+    try{
+      const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
+      if(active?.id && active?.url && sameEngine(active.url, primary)){
+        const r = await retryInject(active.id, 5, 600);
+        if(r && (r.wrote || r.sent)) return r;
+      }
+    }catch(e){}
     // open new window or tab and inject with retries
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
