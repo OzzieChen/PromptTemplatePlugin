@@ -1,0 +1,66 @@
+name: Package edge-prompt-templates
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Create GitHub Release (true/false)'
+        required: false
+        default: 'false'
+      version:
+        description: 'Override version (optional)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate folder
+        run: |
+          test -d edge-prompt-templates
+          test -f edge-prompt-templates/manifest.json
+
+      - name: Read version
+        id: ver
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            ver="${{ github.event.inputs.version }}"
+          else
+            ver=$(node -p "require('./edge-prompt-templates/manifest.json').version")
+          fi
+          echo "version=$ver" >> $GITHUB_OUTPUT
+
+      - name: Prepare dist folder
+        run: |
+          rm -rf dist
+          mkdir -p dist
+
+      - name: Create zip (under dist/)
+        run: |
+          zip -r "dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip" edge-prompt-templates
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          path: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create Release (optional)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          draft: false
+          prerelease: false
+          files: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
