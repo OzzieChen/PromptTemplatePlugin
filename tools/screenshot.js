@@ -31,40 +31,40 @@ async function ensureDir(p){ if(!fs.existsSync(p)) fs.mkdirSync(p, { recursive: 
     };
   });
 
-  const fileUrl = 'file://' + path.resolve(__dirname, '..', 'edge-prompt-templates', 'panel.html');
+  const fileUrl = 'file://' + path.resolve(__dirname, '..', 'edge-prompt-templates', 'popup.html');
 
-  // Home (Gallery)
-  await page.setViewport({ width: 1200, height: 800, deviceScaleFactor: 1 });
+  // Popup width baseline: 560
+  await page.setViewport({ width: 560, height: 860, deviceScaleFactor: 1 });
   await page.goto(fileUrl, { waitUntil: 'domcontentloaded' });
   await waitForCards(page);
-  await sleep(300);
-  await page.screenshot({ path: path.join(assetsDir, 'home.png') });
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'home-popup.png') });
 
-  // Detail (Fill view)
-  await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 1 });
+  // Open fill view by clicking first card
   await page.click('#cards .card');
   await page.waitForSelector('#fillView:not(.hidden)');
-  await sleep(300);
-  await page.screenshot({ path: path.join(assetsDir, 'detail.png') });
+  await page.setViewport({ width: 560, height: 980, deviceScaleFactor: 1 });
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'detail-popup.png') });
 
-  // Back to gallery to click edit link
+  // Back then open edit
   await page.click('#back2');
   await waitForCards(page);
-  await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 1 });
   await page.click('#cards .card [data-edit]');
   await page.waitForSelector('#editView:not(.hidden)');
-  await sleep(300);
-  await page.screenshot({ path: path.join(assetsDir, 'edit.png') });
+  await page.setViewport({ width: 560, height: 980, deviceScaleFactor: 1 });
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'edit-popup.png') });
 
-  // Settings view
+  // Settings
   await page.click('#back1');
   await waitForCards(page);
   await page.click('#settingsBtn');
   await page.waitForSelector('#settingsView:not(.hidden)');
-  await page.setViewport({ width: 1000, height: 760, deviceScaleFactor: 1 });
-  await sleep(300);
-  await page.screenshot({ path: path.join(assetsDir, 'settings.png') });
+  await page.setViewport({ width: 560, height: 900, deviceScaleFactor: 1 });
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'settings-popup.png') });
 
   await browser.close();
-  console.log('Screenshots saved to', assetsDir);
+  console.log('Popup screenshots saved to', assetsDir);
 })();

@@ -41,26 +41,25 @@
 - 当前版本：`2.4.6`
 
 ### 截图（示例尺寸与说明）
-- 首页（模板库/搜索）：1200×800，PNG，中文正常显示。
-- 模板详情页（填充/预览/插入按钮）：1200×900，PNG，含“插入”“插入并发送”。
-- 新建/编辑页面（字段设计器）：1200×900，PNG。
-- 设置页（提供商与主题）：1000×760，PNG。
+- 弹出页尺寸：宽 560px（以下截图均按真实弹窗宽度）
+- 首页（模板库/搜索）：560×860 PNG
+- 模板详情页（填充/预览/插入按钮）：560×980 PNG
+- 新建/编辑页面（字段设计器）：560×980 PNG
+- 设置页（提供商与主题）：560×900 PNG
 
-请将真实截图放入 `edge-prompt-templates/assets/` 目录，并在上文位置按需内嵌或链接展示。
-
-#### 示例截图
-- 首页：`assets/home.png`
-- 模板详情页：`assets/detail.png`
-- 新建/编辑页：`assets/edit.png`
-- 设置页：`assets/settings.png`
+#### 示例截图（弹窗尺寸）
+- 首页：`assets/home-popup.png`
+- 模板详情页：`assets/detail-popup.png`
+- 新建/编辑页：`assets/edit-popup.png`
+- 设置页：`assets/settings-popup.png`
 
 <div>
-  <p><strong>首页</strong></p>
-  <img src="assets/home.png" alt="首页（模板库/搜索）" width="900">
-  <p><strong>模板详情页</strong></p>
-  <img src="assets/detail.png" alt="模板详情页（填充/预览/插入并发送）" width="900">
-  <p><strong>新建/编辑页</strong></p>
-  <img src="assets/edit.png" alt="新建/编辑页面（字段设计器）" width="900">
-  <p><strong>设置页</strong></p>
-  <img src="assets/settings.png" alt="设置页（提供商与主题）" width="760">
+  <p><strong>首页（弹窗）</strong></p>
+  <img src="assets/home-popup.png" alt="首页（模板库/搜索，弹窗尺寸）" width="560">
+  <p><strong>模板详情页（弹窗）</strong></p>
+  <img src="assets/detail-popup.png" alt="模板详情页（弹窗尺寸）" width="560">
+  <p><strong>新建/编辑页（弹窗）</strong></p>
+  <img src="assets/edit-popup.png" alt="新建/编辑页（弹窗尺寸）" width="560">
+  <p><strong>设置页（弹窗）</strong></p>
+  <img src="assets/settings-popup.png" alt="设置页（弹窗尺寸）" width="560">
 </div>
