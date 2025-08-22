@@ -4,7 +4,6 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - main
       - cursor/fix-edge-insert-bug-and-update-readme-7f1c
 
 permissions:
@@ -17,31 +16,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read version
-        id: ver
-        run: |
-          echo "version=$(node -p "require('./edge-prompt-templates/manifest.json').version")" >> $GITHUB_OUTPUT
-
       - name: Verify manifest exists
         run: |
           test -f edge-prompt-templates/manifest.json
 
-      - name: Create single-layer zip (first layer is folder)
+      - name: Create single-layer zip (root folder edge-prompt-templates)
         run: |
-          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
+          zip -r edge-prompt-templates.zip edge-prompt-templates
 
       - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
         with:
-          name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
-          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          name: edge-prompt-templates
+          path: edge-prompt-templates.zip
           if-no-files-found: error
 
       - name: Publish GitHub Release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.ver.outputs.version }}
-          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          tag_name: v2.4.8
+          name: edge-prompt-templates v2.4.8
           draft: false
           prerelease: false
-          files: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          files: edge-prompt-templates.zip
