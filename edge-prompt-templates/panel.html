@@ -102,15 +102,18 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 /* Provider cards */
 .provider-wrap{flex:1}
 .provider-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.provider-card{display:flex;align-items:center;justify-content:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;min-height:72px}
+.provider-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;min-height:92px;position:relative}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
 .provider-card img{width:48px;height:48px;object-fit:contain;display:block}
 .provider-card img.theme-dark{display:none}
 [data-theme="dark"] .provider-card img.theme-light{display:none}
 [data-theme="dark"] .provider-card img.theme-dark{display:block}
-.provider-card .fallback{display:none;font-size:12px;color:var(--muted)}
-.provider-card.img-error .fallback{display:inline}
-.provider-card.img-error img{display:none}
+/* DeepSeek: if dark variant is not ideal, invert light on dark */
+[data-theme="dark"] .provider-card[data-pv="deepseek"] img.theme-dark{filter:invert(1) brightness(1.2)}
+.provider-card .name{font-size:12px;color:var(--muted);line-height:1}
+.provider-card .tick{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--accent);background:var(--accent);display:none;align-items:center;justify-content:center}
+.provider-card .tick svg{width:12px;height:12px;display:block}
+.provider-card.active .tick{display:flex}
 .provider-actions{margin-top:12px;display:flex;justify-content:flex-start}
   </style>
 </head>
@@ -167,27 +170,35 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
     <div class="view-nav"><button id="back3" class="back">← 返回</button><div class="title">设置</div></div>
     <div class="card">
       <div class="settings">
-        <div class="row"><label class="small">服务提供商</label>
+        <div class="row"><label class="small">后端大模型</label>
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
               <button type="button" class="provider-card" data-pv="chatgpt" title="ChatGPT">
+                <div class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></div>
                 <img class="theme-light" alt="ChatGPT" src="assets/providers/chatgpt-light.png">
                 <img class="theme-dark" alt="ChatGPT" src="assets/providers/chatgpt-dark.png">
+                <div class="name">ChatGPT</div>
                 <span class="fallback">ChatGPT</span>
               </button>
               <button type="button" class="provider-card" data-pv="kimi" title="Kimi">
+                <div class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></div>
                 <img class="theme-light" alt="Kimi" src="assets/providers/kimi-light.png">
                 <img class="theme-dark" alt="Kimi" src="assets/providers/kimi-dark.png">
+                <div class="name">Kimi</div>
                 <span class="fallback">Kimi</span>
               </button>
               <button type="button" class="provider-card" data-pv="deepseek" title="DeepSeek">
+                <div class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></div>
                 <img class="theme-light" alt="DeepSeek" src="assets/providers/deepseek-light.png">
                 <img class="theme-dark" alt="DeepSeek" src="assets/providers/deepseek-dark.png">
+                <div class="name">DeepSeek</div>
                 <span class="fallback">DeepSeek</span>
               </button>
               <button type="button" class="provider-card" data-pv="perplexity" title="Perplexity">
+                <div class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></div>
                 <img class="theme-light" alt="Perplexity" src="assets/providers/perplexity-light.png">
                 <img class="theme-dark" alt="Perplexity" src="assets/providers/perplexity-dark.png">
+                <div class="name">Perplexity</div>
                 <span class="fallback">Perplexity</span>
               </button>
             </div>
