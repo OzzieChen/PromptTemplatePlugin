@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.2）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.2.4）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -43,7 +43,7 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.11.2`
+- 当前版本：`2.11.2.4`
 
 #### 2.11.2 变更
 - 设置页改为“服务提供商卡片”选择：ChatGPT/Kimi/DeepSeek/Perplexity/自定义。仅“自定义”显示 URL 输入。
@@ -72,11 +72,11 @@
 - 设置页（提供商与主题）：560×900 PNG
 
 #### 示例截图（弹窗尺寸）
-- 首页：`assets/home-popup.png`
-- 模板详情页：`assets/detail-popup.png`
-- 新建/编辑页：`assets/edit-popup.png`
-- 代码导入弹窗：`assets/edit-import-popup.png`
-- 设置页：`assets/settings-popup.png`
+- 首页（左：浅色｜右：深色）：`assets/home-popup.png`
+- 模板详情页（左：浅色｜右：深色）：`assets/detail-popup.png`
+- 新建/编辑页（左：浅色｜右：深色）：`assets/edit-popup.png`
+- 代码导入弹窗（左：浅色｜右：深色）：`assets/edit-import-popup.png`
+- 设置页（左：浅色｜右：深色）：`assets/settings-popup.png`
 
 <div>
   <p><strong>首页（弹窗）</strong></p>
