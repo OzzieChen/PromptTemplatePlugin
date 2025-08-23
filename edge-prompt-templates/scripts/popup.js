@@ -377,7 +377,14 @@
   function wire(){
     $('#search')?.addEventListener('input', ()=>{ renderGallery(); saveLast(); });
     $('#newBtn')?.addEventListener('click', ()=>{ const t={ id:crypto.randomUUID(), name:'', content:'', fields:[], tmpChat:false, createdAt:Date.now() }; state.templates.unshift(t); state.activeId=t.id; save().then(()=>{ select(t.id); openEdit(); }); });
-    $('#settingsBtn')?.addEventListener('click', ()=>{ $('#provider').value=settings.provider; $('#backendRegular').value=settings.regularURL||''; $('#backendTemporary').value=settings.temporaryURL||''; $('#theme').value=settings.theme||'system'; setMode('settings'); });
+    $('#settingsBtn')?.addEventListener('click', ()=>{ 
+      setMode('settings');
+      try{ typeof applyProviderSelection==='function' && applyProviderSelection(settings.provider||'chatgpt'); }catch(e){}
+      const isCustom = (settings.provider==='custom');
+      if($('#backendRegular')) $('#backendRegular').value = isCustom ? (settings.regularURL||'') : '';
+      if($('#backendTemporary')) $('#backendTemporary').value = isCustom ? (settings.temporaryURL||'') : '';
+      if($('#theme')) $('#theme').value = settings.theme || 'system';
+    });
     $('#back1')?.addEventListener('click', ()=>{ if(dirty){ if(confirm('是否保存当前更改？')){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
     $('#back2')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
     $('#back3')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
@@ -493,7 +500,16 @@
       await storage.set({ [SETTINGS_KEY]:settings });
       applyTheme(); toast('已保存设置');
     });
-    $('#resetSettings')?.addEventListener('click', async ()=>{ settings={ ...DEFAULT_SETTINGS }; $('#provider').value=settings.provider; $('#backendRegular').value=settings.regularURL; $('#backendTemporary').value=settings.temporaryURL; $('#theme').value=settings.theme; await storage.set({ [SETTINGS_KEY]:settings }); const root=document.documentElement; root.removeAttribute('data-theme'); toast('已恢复默认'); });
+    $('#resetSettings')?.addEventListener('click', async ()=>{ 
+      settings={ ...DEFAULT_SETTINGS }; 
+      await storage.set({ [SETTINGS_KEY]:settings }); 
+      try{ typeof applyProviderSelection==='function' && applyProviderSelection(settings.provider||'chatgpt'); }catch(e){}
+      if($('#backendRegular')) $('#backendRegular').value='';
+      if($('#backendTemporary')) $('#backendTemporary').value='';
+      if($('#theme')) $('#theme').value=settings.theme;
+      const root=document.documentElement; root.removeAttribute('data-theme'); 
+      toast('已恢复默认'); 
+    });
   }
 
   async function init(){
