@@ -28,7 +28,7 @@ async function captureVariant(page, fileUrl, theme, tmpNames){
 
   await page.setViewport({ width: 560, height: 860, deviceScaleFactor: 1 });
   await page.goto(fileUrl, { waitUntil: 'networkidle0' });
-  await page.evaluate((t)=>{ try{ localStorage.setItem('pts_settings', JSON.stringify({provider:'chatgpt', theme:t, regularURL:'', temporaryURL:''})); }catch(e){} }, theme);
+  await page.evaluate((t)=>{ try{ localStorage.setItem('__pts__', JSON.stringify({ '__settings__': { provider:'chatgpt', theme:t, regularURL:'', temporaryURL:'' } })); }catch(e){} }, theme);
   await page.reload({ waitUntil: 'networkidle0' });
   await waitForCards(page);
   await sleep(400);
