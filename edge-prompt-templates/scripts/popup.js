@@ -390,6 +390,19 @@
         closeImport();
       }catch(e){ toast('解析失败：'+(e.message||e)); }
     });
+    $('#modalHelp')?.addEventListener('click', ()=>{
+      const sample={
+        name:"新场景",
+        content:"【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n...",
+        fields:[
+          { key:"thing", label:"事项", type:"select", options:["A","B","C"], default:"A", allowCustom:true, required:true },
+          { key:"input", label:"输入内容", type:"textarea", placeholder:"在此粘贴…" }
+        ]
+      };
+      navigator.clipboard.writeText(JSON.stringify(sample, null, 2)).then(()=>{
+        toast('已复制示例：请发送给 ChatGPT 生成你的模板');
+      }).catch(()=> toast('复制失败'));
+    });
 
     $('#copy')?.addEventListener('click', ()=>onCopyOrInsert('copy'));
     $('#insert')?.addEventListener('click', ()=>onCopyOrInsert('insert'));
