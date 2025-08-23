@@ -30,7 +30,7 @@ h1{font-size:14px;margin:0}
 .row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
 .row.ta{align-items:flex-start}
 .row.ta label.small{padding-top:6px}
-label.small{min-width:140px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+label.small{min-width:110px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .control{width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);outline:none;transition:border-color .15s ease,box-shadow .15s ease;font-family:inherit}
 .control:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 textarea.control{font-family:inherit;line-height:1.55}
@@ -95,14 +95,17 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 .modal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 /* Provider cards */
 .provider-wrap{flex:1}
-.provider-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.provider-card{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;justify-content:flex-start}
+.provider-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.provider-card{display:flex;align-items:center;justify-content:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;min-height:72px}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
-.provider-card img{width:24px;height:24px;object-fit:contain;display:block}
-.provider-card{min-height:64px}
-.provider-card img{width:40px;height:40px}
-[data-theme="dark"] .provider-card img[data-invert="1"]{filter:brightness(0) invert(1)}
-.provider-actions{margin-top:6px;display:flex;justify-content:flex-end}
+.provider-card img{width:48px;height:48px;object-fit:contain;display:block}
+.provider-card .fallback{display:none;font-size:12px;color:var(--muted)}
+.provider-card.img-error .fallback{display:inline}
+.provider-card.img-error img{display:none}
+.provider-card img.theme-dark{display:none}
+[data-theme="dark"] .provider-card img.theme-light{display:none}
+[data-theme="dark"] .provider-card img.theme-dark{display:block}
+.provider-actions{margin-top:12px;display:flex;justify-content:flex-start}
   </style>
 </head>
 <body class="popup">
@@ -161,12 +164,28 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         <div class="row"><label class="small">服务提供商</label>
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
-              <button type="button" class="provider-card" data-pv="chatgpt"><img data-invert="1" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png"><span>ChatGPT</span></button>
-              <button type="button" class="provider-card" data-pv="kimi"><img alt="Kimi" src="https://www.kimi.com/favicon-196x196.png"><span>Kimi</span></button>
-              <button type="button" class="provider-card" data-pv="deepseek"><img alt="DeepSeek" src="https://chat.deepseek.com/icons/icon-192x192.png"><span>DeepSeek</span></button>
-              <button type="button" class="provider-card" data-pv="perplexity"><img alt="Perplexity" src="https://www.perplexity.ai/pplx-icon.png"><span>Perplexity</span></button>
+              <button type="button" class="provider-card" data-pv="chatgpt" title="ChatGPT">
+                <img class="theme-light" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png">
+                <img class="theme-dark" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png">
+                <span class="fallback">ChatGPT</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="kimi" title="Kimi">
+                <img class="theme-light" alt="Kimi" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/kimi-color.png">
+                <img class="theme-dark" alt="Kimi" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/kimi-color.png">
+                <span class="fallback">Kimi</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="deepseek" title="DeepSeek">
+                <img class="theme-light" alt="DeepSeek" src="https://img.icons8.com/fluent-systems-filled/512/deepseek.png">
+                <img class="theme-dark" alt="DeepSeek" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/deepseek.png">
+                <span class="fallback">DeepSeek</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="perplexity" title="Perplexity">
+                <img class="theme-light" alt="Perplexity" src="https://images.seeklogo.com/logo-png/61/2/perplexity-ai-icon-black-logo-png_seeklogo-611679.png">
+                <img class="theme-dark" alt="Perplexity" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/perplexity.png">
+                <span class="fallback">Perplexity</span>
+              </button>
             </div>
-            <div class="provider-actions" style="justify-content:flex-start"><a id="providerCustomLink" class="link">自定义</a></div>
+            <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a></div>
           </div>
         </div>
         <div id="customUrlRows" class="">
@@ -178,7 +197,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         </div>
         <div class="separator"></div>
         <div class="row"><button id="saveSettings" class="primary">保存设置</button><button id="resetSettings">恢复默认</button></div>
-        <div class="hint">提示：非 ChatGPT 站点通常不支持“临时会话”，勾选时会自动回退为常规 URL。</div>
+        <div class="hint">提示：选择预置时自动使用默认 URL；选择“自定义”可自行填写。</div>
       </div>
     </div>
   </div>
