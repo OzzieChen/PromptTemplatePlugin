@@ -94,8 +94,9 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 /* match outer focus style */
 .modal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 /* Provider cards */
-.provider-cards{display:flex;gap:10px;flex-wrap:wrap}
-.provider-card{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
+.provider-wrap{flex:1}
+.provider-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.provider-card{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;justify-content:flex-start}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
   </style>
 </head>
@@ -152,13 +153,16 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
     <div class="view-nav"><button id="back3" class="back">← 返回</button><div class="title">设置</div></div>
     <div class="card">
       <div class="settings">
-        <div class="row"><label class="small">服务提供商</label></div>
-        <div class="provider-cards" id="providerCards">
-          <button type="button" class="provider-card" data-pv="chatgpt">ChatGPT</button>
-          <button type="button" class="provider-card" data-pv="kimi">Kimi</button>
-          <button type="button" class="provider-card" data-pv="deepseek">DeepSeek</button>
-          <button type="button" class="provider-card" data-pv="perplexity">Perplexity</button>
-          <button type="button" class="provider-card" data-pv="custom">自定义</button>
+        <div class="row"><label class="small">服务提供商</label>
+          <div class="provider-wrap">
+            <div class="provider-cards" id="providerCards">
+              <button type="button" class="provider-card" data-pv="chatgpt">ChatGPT</button>
+              <button type="button" class="provider-card" data-pv="kimi">Kimi</button>
+              <button type="button" class="provider-card" data-pv="deepseek">DeepSeek</button>
+              <button type="button" class="provider-card" data-pv="perplexity">Perplexity</button>
+              <button type="button" class="provider-card" data-pv="custom">自定义</button>
+            </div>
+          </div>
         </div>
         <div id="customUrlRows" class="">
           <div class="row"><label class="small" for="backendRegular">常规会话 URL</label><input id="backendRegular" class="control" type="text" placeholder="如：https://chatgpt.com"></div>
