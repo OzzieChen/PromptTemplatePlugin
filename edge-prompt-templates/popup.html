@@ -99,7 +99,9 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 .provider-card{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;justify-content:flex-start}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
 .provider-card img{width:24px;height:24px;object-fit:contain;display:block}
-[data-theme="dark"] .provider-card img{filter:brightness(0) invert(1)}
+.provider-card{min-height:64px}
+.provider-card img{width:40px;height:40px}
+[data-theme="dark"] .provider-card img[data-invert="1"]{filter:brightness(0) invert(1)}
 .provider-actions{margin-top:6px;display:flex;justify-content:flex-end}
   </style>
 </head>
@@ -159,12 +161,12 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         <div class="row"><label class="small">服务提供商</label>
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
-              <button type="button" class="provider-card" data-pv="chatgpt"><img alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png"><span>ChatGPT</span></button>
-              <button type="button" class="provider-card" data-pv="kimi"><img alt="Kimi" src="https://www.kimi.com/favicon.ico"><span>Kimi</span></button>
-              <button type="button" class="provider-card" data-pv="deepseek"><img alt="DeepSeek" src="https://chat.deepseek.com/favicon.ico"><span>DeepSeek</span></button>
-              <button type="button" class="provider-card" data-pv="perplexity"><img alt="Perplexity" src="https://www.perplexity.ai/favicon.ico"><span>Perplexity</span></button>
+              <button type="button" class="provider-card" data-pv="chatgpt"><img data-invert="1" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png"><span>ChatGPT</span></button>
+              <button type="button" class="provider-card" data-pv="kimi"><img alt="Kimi" src="https://www.kimi.com/favicon-196x196.png"><span>Kimi</span></button>
+              <button type="button" class="provider-card" data-pv="deepseek"><img alt="DeepSeek" src="https://chat.deepseek.com/icons/icon-192x192.png"><span>DeepSeek</span></button>
+              <button type="button" class="provider-card" data-pv="perplexity"><img alt="Perplexity" src="https://www.perplexity.ai/pplx-icon.png"><span>Perplexity</span></button>
             </div>
-            <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a></div>
+            <div class="provider-actions" style="justify-content:flex-start"><a id="providerCustomLink" class="link">自定义</a></div>
           </div>
         </div>
         <div id="customUrlRows" class="">
@@ -172,7 +174,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
           <div class="row"><label class="small" for="backendTemporary">临时会话 URL</label><input id="backendTemporary" class="control" type="text" placeholder="如：https://chatgpt.com/?temporary-chat=true"></div>
         </div>
         <div class="row"><label class="small" for="theme">主题</label>
-          <select id="theme" class="control"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
+          <select id="theme" class="control" style="max-width:180px"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
         </div>
         <div class="separator"></div>
         <div class="row"><button id="saveSettings" class="primary">保存设置</button><button id="resetSettings">恢复默认</button></div>

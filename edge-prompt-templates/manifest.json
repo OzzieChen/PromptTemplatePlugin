@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Prompt Templates for ChatGPT",
   "description": "Prompt templates with provider presets, side panel, JSON import, and robust Edge injection.",
-  "version": "2.11.2.3",
+  "version": "2.11.2.4",
   "action": {
     "default_title": "Prompt Templates",
     "default_popup": "popup.html",
