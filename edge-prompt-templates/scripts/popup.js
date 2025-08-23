@@ -45,6 +45,7 @@
   let state={ templates:[], activeId:null, values:{}, mode:'gallery' };
   let settings = { ...DEFAULT_SETTINGS };
   let dirty=false;
+  let draggingId=null;
 
   function applyTheme(){ const root=document.documentElement; const t=settings?.theme||'system'; if(t==='system'){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme', t); } }
   function escHTML(s){
@@ -134,6 +135,28 @@
       card.addEventListener('click',(e)=>{ if(e.target.dataset.edit!==undefined||e.target.dataset.del!==undefined) return; select(t.id); openFill(true); });
       card.querySelector('[data-edit]').addEventListener('click',(e)=>{ e.stopPropagation(); select(t.id); openEdit(); });
       card.querySelector('[data-del]').addEventListener('click',async(e)=>{ e.stopPropagation(); if(confirm(`删除模板 “${t.name||'(未命名)'}”？`)){ await del(t.id); toast('已删除'); renderGallery(); }});
+
+      // drag & drop sorting
+      card.addEventListener('dragstart',(e)=>{
+        draggingId = t.id;
+        try{ e.dataTransfer.setData('text/plain', t.id); e.dataTransfer.effectAllowed='move'; }catch(err){}
+      });
+      card.addEventListener('dragover',(e)=>{ e.preventDefault(); try{ e.dataTransfer.dropEffect='move'; }catch(err){} });
+      card.addEventListener('drop',(e)=>{
+        e.preventDefault();
+        const fromId = draggingId || ((()=>{ try{ return e.dataTransfer.getData('text/plain'); }catch(err){ return ''; }})());
+        const toId = t.id;
+        draggingId = null;
+        if(!fromId || !toId || fromId===toId) return;
+        const arr = state.templates.slice();
+        const fromIdx = arr.findIndex(x=>x.id===fromId);
+        const toIdx = arr.findIndex(x=>x.id===toId);
+        if(fromIdx<0 || toIdx<0) return;
+        const [moved] = arr.splice(fromIdx,1);
+        arr.splice(toIdx,0,moved);
+        state.templates = arr;
+        save().then(()=>{ renderGallery(); toast('已排序'); saveLast(); });
+      });
       cards.appendChild(card);
     });
   }
