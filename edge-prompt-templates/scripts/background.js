@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.11.1.2 up');
+console.log('[PTS] background v2.11.2 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -158,6 +158,7 @@ function hostGroupFromUrl(u){
     if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
     if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
     if(h==='chat.deepseek.com') return 'deepseek';
+    if(h==='www.perplexity.ai') return 'perplexity';
     return h;
   }catch(e){ return ''; }
 }
@@ -250,6 +251,8 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
         let regular = urls.regular || 'https://chatgpt.com';
         let temporary = urls.temporary || 'https://chatgpt.com/?temporary-chat=true';
         const isChatgptGroup = (u)=>{ try{ const h=new URL(u).host; return (h==='chatgpt.com'||h==='chat.openai.com'); }catch(e){ return false; } };
+        const isPerplexity = (u)=>{ try{ return new URL(u).host==='www.perplexity.ai'; }catch(e){ return false; } };
+
         const candidates = [];
         if(isChatgptGroup(regular)){
           const prim = temp ? temporary : regular;
@@ -264,6 +267,8 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
             if(!candidates.includes(regPrim)) candidates.push(regPrim);
             if(!candidates.includes(regAlt)) candidates.push(regAlt);
           }
+        } else if (isPerplexity(regular)) {
+          candidates.push(temp ? temporary : regular);
         } else {
           candidates.push(temp ? temporary : regular);
         }
