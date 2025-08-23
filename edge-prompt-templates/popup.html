@@ -44,6 +44,7 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .view-nav{position:relative;display:flex;align-items:center;gap:8px;padding:12px 0 12px;margin-bottom:16px}
 .view-nav .back{z-index:2}
 .view-nav .title{position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:600;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.view-nav .right-actions{position:absolute;right:0;display:flex;gap:8px}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{padding:4px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted);background:color-mix(in lab,var(--card) 92%,var(--bg))}
 .fields-wrap{border:1px solid var(--line);border-radius:var(--radius);padding:12px;background:var(--card)}
@@ -81,7 +82,15 @@ html,body{min-height:100%;height:auto}
 input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:1px solid var(--line);border-radius:4px;background:var(--card);display:inline-block;vertical-align:middle;cursor:pointer}
 input[type="checkbox"]:checked{background:var(--accent);border-color:var(--accent);background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="white" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg>');background-position:center;background-repeat:no-repeat;background-size:12px 12px}
 input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-</style>
+/* Import modal overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9998}
+.overlay.show{display:flex}
+.modal{width:92%;max-width:680px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px}
+.modal h3{margin:0 0 8px 0;font-size:16px}
+.modal .body{margin-top:8px}
+.modal textarea{width:100%;min-height:260px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--fg);font-family:inherit}
+.modal .actions{margin-top:12px;display:flex;gap:10px;justify-content:flex-end}
+  </style>
 </head>
 <body class="popup">
 <header><img src="icons/icon16.png" width="16" height="16" alt=""><h1>Prompt Templates</h1></header>
@@ -101,7 +110,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
   </div>
 
   <div id="editView" class="hidden">
-    <div class="view-nav"><button id="back1" class="back">← 返回</button><div class="title">编辑模板</div></div>
+    <div class="view-nav"><button id="back1" class="back">← 返回</button><div class="title">编辑模板</div><div class="right-actions"><button id="openImportModal">导入代码</button></div></div>
     <div class="card">
       <div class="row"><label class="small" for="name">模板标题</label><input id="name" class="control" type="text" placeholder="如：书面材料英语（标题/正文 分场景）" autocomplete="off"></div>
       <div class="row ta"><label class="small" for="content">Prompt 模板</label><textarea id="content" class="control" placeholder="用 {变量} 引用字段。分支如“若为 Title：…”可自动裁剪（可选）"></textarea></div>
@@ -111,15 +120,6 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         <button id="cancel">取消</button>
         <button id="del">删除</button>
         <button id="addField">新增字段</button>
-        <button id="importCode">粘贴代码</button><span id="importHelp" class="icon-help" title="示例">?</span>
-      </div>
-      <div id="importArea" class="row ta hidden">
-        <label class="small">粘贴 JSON，点击“解析并填充”</label>
-        <textarea id="importText" class="control" placeholder='{"name":"新场景","content":"...","fields":[{"key":"x","label":"X","type":"text","placeholder":"输入 X"}]}'></textarea>
-      </div>
-      <div id="importActions" class="row hidden">
-        <button id="parseImport" class="primary">解析并填充</button>
-        <button id="cancelImport">关闭导入</button>
       </div>
     </div>
     <div class="card" style="margin-top:12px;">
@@ -161,6 +161,18 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         <div class="row"><button id="saveSettings" class="primary">保存设置</button><button id="resetSettings">恢复默认</button></div>
         <div class="hint">提示：非 ChatGPT 站点通常不支持“临时会话”，勾选时会自动回退为常规 URL。</div>
       </div>
+    </div>
+  </div>
+</div>
+<div id="importOverlay" class="overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+    <h3 id="importTitle">导入代码</h3>
+    <div class="body">
+      <textarea id="modalImportText" placeholder='{"name":"新场景","content":"...","fields":[{"key":"x","label":"X","type":"text","placeholder":"输入 X"}]}'></textarea>
+    </div>
+    <div class="actions">
+      <button id="modalParse" class="primary">解析并填充</button>
+      <button id="modalCancel">关闭</button>
     </div>
   </div>
 </div>

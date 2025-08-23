@@ -371,10 +371,26 @@
     $('#del')?.addEventListener('click', ()=>{ if(state.activeId&&confirm('删除此模板？')){ (async()=>{ await del(state.activeId); renderGallery(); setMode('gallery'); })(); }});
     $('#content')?.addEventListener('input', ()=>{ dirty=true; renderPills(); });
     $('#addField')?.addEventListener('click', ()=>{ const t=state.templates.find(x=>x.id===state.activeId); if(!t) return; t.fields.push({ key:'field_'+(t.fields.length+1), label:'字段'+(t.fields.length+1), type:'text', placeholder:'在此输入…', allowCustom:false, required:false }); dirty=true; renderFieldsDesigner(); });
-    $('#importCode')?.addEventListener('click', ()=>{ $('#importArea')?.classList.remove('hidden'); $('#importActions')?.classList.remove('hidden'); });
-    $('#importHelp')?.addEventListener('click', ()=>{ const sample={"name":"新场景","content":"【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n...","fields":[{"key":"thing","label":"事项","type":"select","options":["A","B","C"],"default":"A","allowCustom":true,"required":true},{"key":"input","label":"输入内容","type":"textarea","placeholder":"在此粘贴…"}]}; navigator.clipboard.writeText(JSON.stringify(sample,null,2)); toast('已复制示例 JSON'); });
-    $('#parseImport')?.addEventListener('click', ()=>{ try{ const raw=($('#importText').value||''); const obj=JSON.parse(raw.replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false')); $('#name').value=obj.name||''; $('#content').value=obj.content||''; renderPills(); const t=state.templates.find(x=>x.id===state.activeId); if(!t) return; t.fields=Array.isArray(obj.fields)?obj.fields:[]; renderFieldsDesigner(); toast('已填充导入内容'); }catch(e){ toast('解析失败：'+e.message); } });
-    $('#cancelImport')?.addEventListener('click', ()=>{ $('#importArea')?.classList.add('hidden'); $('#importActions')?.classList.add('hidden'); const ta=$('#importText'); if(ta) ta.value=''; });
+
+    // New import modal
+    const overlay=$('#importOverlay');
+    const openImport=()=>{ overlay?.classList.add('show'); };
+    const closeImport=()=>{ if(!overlay) return; overlay.classList.remove('show'); const ta=$('#modalImportText'); if(ta) ta.value=''; };
+    $('#openImportModal')?.addEventListener('click', openImport);
+    $('#modalCancel')?.addEventListener('click', closeImport);
+    $('#modalParse')?.addEventListener('click', ()=>{
+      try{
+        const raw=($('#modalImportText').value||'');
+        const obj=JSON.parse(raw.replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false'));
+        $('#name').value=obj.name||'';
+        $('#content').value=obj.content||'';
+        renderPills();
+        const t=state.templates.find(x=>x.id===state.activeId); if(t){ t.fields=Array.isArray(obj.fields)?obj.fields:[]; renderFieldsDesigner(); }
+        toast('已填充导入内容');
+        closeImport();
+      }catch(e){ toast('解析失败：'+(e.message||e)); }
+    });
+
     $('#copy')?.addEventListener('click', ()=>onCopyOrInsert('copy'));
     $('#insert')?.addEventListener('click', ()=>onCopyOrInsert('insert'));
     $('#send')?.addEventListener('click', ()=>onCopyOrInsert('send'));

@@ -54,6 +54,14 @@ async function ensureDir(p){ if(!fs.existsSync(p)) fs.mkdirSync(p, { recursive: 
   await sleep(400);
   await page.screenshot({ path: path.join(assetsDir, 'edit-popup.png') });
 
+  // Open import modal and capture
+  await page.waitForSelector('#openImportModal');
+  await page.evaluate(() => { const btn = document.querySelector('#openImportModal'); if(btn) btn.click(); });
+  await page.waitForSelector('#importOverlay.show');
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'edit-import-popup.png') });
+
+  // Settings
   await page.click('#back1');
   await waitForCards(page);
   await page.click('#settingsBtn');
