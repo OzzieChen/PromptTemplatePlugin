@@ -41,6 +41,9 @@ textarea.control{font-family:inherit;line-height:1.55}
 button{font-size:13px;padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;transition:background-color .18s ease,border-color .18s ease;user-select:none}
 button:hover{background:var(--accent-soft);border-color:var(--accent)}
 button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(0.94)}
+button.primary:active{filter:brightness(0.88)}
+button.primary:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 .view-nav{position:relative;display:flex;align-items:center;gap:8px;padding:12px 0 12px;margin-bottom:16px}
 .view-nav .back{z-index:2}
 .view-nav .title{position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:600;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
@@ -165,23 +168,23 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
               <button type="button" class="provider-card" data-pv="chatgpt" title="ChatGPT">
-                <img class="theme-light" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png">
-                <img class="theme-dark" alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png">
+                <img class="theme-light" alt="ChatGPT" src="assets/providers/chatgpt-light.png">
+                <img class="theme-dark" alt="ChatGPT" src="assets/providers/chatgpt-dark.png">
                 <span class="fallback">ChatGPT</span>
               </button>
               <button type="button" class="provider-card" data-pv="kimi" title="Kimi">
-                <img class="theme-light" alt="Kimi" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/kimi-color.png">
-                <img class="theme-dark" alt="Kimi" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/kimi-color.png">
+                <img class="theme-light" alt="Kimi" src="assets/providers/kimi-light.png">
+                <img class="theme-dark" alt="Kimi" src="assets/providers/kimi-dark.png">
                 <span class="fallback">Kimi</span>
               </button>
               <button type="button" class="provider-card" data-pv="deepseek" title="DeepSeek">
-                <img class="theme-light" alt="DeepSeek" src="https://img.icons8.com/fluent-systems-filled/512/deepseek.png">
-                <img class="theme-dark" alt="DeepSeek" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/deepseek.png">
+                <img class="theme-light" alt="DeepSeek" src="assets/providers/deepseek-light.png">
+                <img class="theme-dark" alt="DeepSeek" src="assets/providers/deepseek-dark.png">
                 <span class="fallback">DeepSeek</span>
               </button>
               <button type="button" class="provider-card" data-pv="perplexity" title="Perplexity">
-                <img class="theme-light" alt="Perplexity" src="https://images.seeklogo.com/logo-png/61/2/perplexity-ai-icon-black-logo-png_seeklogo-611679.png">
-                <img class="theme-dark" alt="Perplexity" src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/perplexity.png">
+                <img class="theme-light" alt="Perplexity" src="assets/providers/perplexity-light.png">
+                <img class="theme-dark" alt="Perplexity" src="assets/providers/perplexity-dark.png">
                 <span class="fallback">Perplexity</span>
               </button>
             </div>

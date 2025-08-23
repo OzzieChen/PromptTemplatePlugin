@@ -42,6 +42,9 @@ textarea.control{font-family:inherit;line-height:1.55}
 button{font-size:13px;padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;transition:background-color .18s ease,border-color .18s ease;user-select:none}
 button:hover{background:var(--accent-soft);border-color:var(--accent)}
 button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(0.94)}
+button.primary:active{filter:brightness(0.88)}
+button.primary:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 .view-nav{position:relative;display:flex;align-items:center;gap:8px;padding:12px 0 12px;margin-bottom:16px}
 .view-nav .back{z-index:2}
 .view-nav .title{position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:600;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
@@ -96,12 +99,14 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 .modal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 /* Provider cards */
 .provider-wrap{flex:1}
-.provider-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.provider-card{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;justify-content:flex-start}
+.provider-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.provider-card{display:flex;align-items:center;justify-content:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;min-height:72px}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
-.provider-card img{width:24px;height:24px;object-fit:contain;display:block}
-[data-theme="dark"] .provider-card img{filter:brightness(0) invert(1)}
-.provider-actions{margin-top:6px;display:flex;justify-content:flex-end}
+.provider-card img{width:48px;height:48px;object-fit:contain;display:block}
+.provider-card img.theme-dark{display:none}
+[data-theme="dark"] .provider-card img.theme-light{display:none}
+[data-theme="dark"] .provider-card img.theme-dark{display:block}
+.provider-actions{margin-top:12px;display:flex;justify-content:flex-start}
   </style>
 </head>
 <body class="panel">
@@ -160,10 +165,26 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
         <div class="row"><label class="small">服务提供商</label>
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
-              <button type="button" class="provider-card" data-pv="chatgpt"><img alt="ChatGPT" src="https://static.cdnlogo.com/logos/c/18/ChatGPT_800x800.png"><span>ChatGPT</span></button>
-              <button type="button" class="provider-card" data-pv="kimi"><img alt="Kimi" src="https://www.kimi.com/favicon.ico"><span>Kimi</span></button>
-              <button type="button" class="provider-card" data-pv="deepseek"><img alt="DeepSeek" src="https://chat.deepseek.com/favicon.ico"><span>DeepSeek</span></button>
-              <button type="button" class="provider-card" data-pv="perplexity"><img alt="Perplexity" src="https://www.perplexity.ai/favicon.ico"><span>Perplexity</span></button>
+              <button type="button" class="provider-card" data-pv="chatgpt" title="ChatGPT">
+                <img class="theme-light" alt="ChatGPT" src="assets/providers/chatgpt-light.png">
+                <img class="theme-dark" alt="ChatGPT" src="assets/providers/chatgpt-dark.png">
+                <span class="fallback">ChatGPT</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="kimi" title="Kimi">
+                <img class="theme-light" alt="Kimi" src="assets/providers/kimi-light.png">
+                <img class="theme-dark" alt="Kimi" src="assets/providers/kimi-dark.png">
+                <span class="fallback">Kimi</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="deepseek" title="DeepSeek">
+                <img class="theme-light" alt="DeepSeek" src="assets/providers/deepseek-light.png">
+                <img class="theme-dark" alt="DeepSeek" src="assets/providers/deepseek-dark.png">
+                <span class="fallback">DeepSeek</span>
+              </button>
+              <button type="button" class="provider-card" data-pv="perplexity" title="Perplexity">
+                <img class="theme-light" alt="Perplexity" src="assets/providers/perplexity-light.png">
+                <img class="theme-dark" alt="Perplexity" src="assets/providers/perplexity-dark.png">
+                <span class="fallback">Perplexity</span>
+              </button>
             </div>
             <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a></div>
           </div>
