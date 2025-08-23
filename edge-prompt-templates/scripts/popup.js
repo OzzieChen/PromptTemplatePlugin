@@ -285,14 +285,22 @@
       const right=document.createElement('div'); right.className='right'; const del=document.createElement('button'); del.textContent='删除'; right.appendChild(del);
       head.appendChild(cap); head.appendChild(right); blk.appendChild(head);
 
-      const mk = (label, html) => { const it=document.createElement('div'); it.className='field-item'; it.innerHTML=`<div class="sublabel">${label}</div>${html}`; return it; };
-      blk.appendChild(mk('参数名', '<input data-k="key" class="control" type="text" placeholder="key（用于 {{key}} ）">'));
-      blk.appendChild(mk('字段名称', '<input data-k="label" class="control" type="text" placeholder="显示名称（中文）">'));
-      blk.appendChild(mk('字段类型', '<select data-k="type" class="control"><option value="text">Text</option><option value="textarea">Textarea</option><option value="select">Select</option></select>'));
-      blk.appendChild(mk('候选项（逗号分隔，仅 Select）', '<input data-k="options" class="control" type="text" placeholder="如：Title, Body">'));
-      blk.appendChild(mk('默认值（仅 Select）', '<input data-k="default" class="control" type="text" placeholder="默认值（可留空）">'));
-      blk.appendChild(mk('提示词（仅 Text/Textarea）', '<input data-k="placeholder" class="control" type="text" placeholder="如：在此输入…">'));
-      blk.appendChild(mk('开关', '<div class="field-flags"><label class="small"><input data-k="allowCustom" type="checkbox"> 允许自定义</label><label class="small"><input data-k="required" type="checkbox"> 必填</label></div>'));
+      const mk = (label, html, role) => { const it=document.createElement('div'); it.className='field-item'; if(role) it.dataset.role=role; it.innerHTML=`<div class="sublabel">${label}</div>${html}`; return it; };
+      const rowKey = mk('参数名', '<input data-k="key" class="control" type="text" placeholder="key（用于 {{key}} ）">');
+      const rowLabel = mk('字段名称', '<input data-k="label" class="control" type="text" placeholder="显示名称（中文）">');
+      const rowType = mk('字段类型', '<select data-k="type" class="control"><option value="text">Text</option><option value="textarea">Textarea</option><option value="select">Select</option></select>');
+      const rowOptions = mk('候选项（逗号分隔，仅 Select）', '<input data-k="options" class="control" type="text" placeholder="如：Title, Body">', 'options');
+      const rowDefault = mk('默认值（仅 Select）', '<input data-k="default" class="control" type="text" placeholder="默认值（可留空）">', 'default');
+      const rowPlaceholder = mk('提示词（仅 Text/Textarea）', '<input data-k="placeholder" class="control" type="text" placeholder="如：在此输入…">', 'placeholder');
+      const rowFlags = mk('开关', '<div class="field-flags"><label class="small"><input data-k="allowCustom" type="checkbox"> 允许自定义</label><label class="small"><input data-k="required" type="checkbox"> 必填</label></div>');
+
+      blk.appendChild(rowKey);
+      blk.appendChild(rowLabel);
+      blk.appendChild(rowType);
+      blk.appendChild(rowOptions);
+      blk.appendChild(rowDefault);
+      blk.appendChild(rowPlaceholder);
+      blk.appendChild(rowFlags);
 
       // set initial values
       blk.querySelector('[data-k="key"]').value=f.key||'';
@@ -303,6 +311,15 @@
       blk.querySelector('[data-k="placeholder"]').value=(f.placeholder??'');
       blk.querySelector('[data-k="allowCustom"]').checked=!!f.allowCustom;
       blk.querySelector('[data-k="required"]').checked=!!f.required;
+
+      function updateVisibility(){
+        const curType = blk.querySelector('[data-k="type"]').value;
+        const showSelect = (curType==='select');
+        const showTextual = (curType==='text' || curType==='textarea');
+        rowOptions.style.display = showSelect ? '' : 'none';
+        rowDefault.style.display = showSelect ? '' : 'none';
+        rowPlaceholder.style.display = showTextual ? '' : 'none';
+      }
 
       function writeBack(){
         const rows=Array.from(document.querySelectorAll('.field-block'));
@@ -316,7 +333,10 @@
         const t0=state.templates.find(x=>x.id===state.activeId); if(!t0) return; t0.fields=list; dirty=true;
       }
       blk.querySelectorAll('[data-k]').forEach(el=>{ el.addEventListener('input', writeBack); el.addEventListener('change', writeBack); });
+      blk.querySelector('[data-k="type"]').addEventListener('change', ()=>{ updateVisibility(); writeBack(); });
       del.addEventListener('click', ()=>{ const t0=state.templates.find(x=>x.id===state.activeId); if(!t0) return; t0.fields.splice(idx,1); save().then(()=>{ renderFieldsDesigner(); toast('已删除字段'); }); });
+
+      updateVisibility();
       root.appendChild(blk);
     });
   }
@@ -351,10 +371,10 @@
     $('#del')?.addEventListener('click', ()=>{ if(state.activeId&&confirm('删除此模板？')){ (async()=>{ await del(state.activeId); renderGallery(); setMode('gallery'); })(); }});
     $('#content')?.addEventListener('input', ()=>{ dirty=true; renderPills(); });
     $('#addField')?.addEventListener('click', ()=>{ const t=state.templates.find(x=>x.id===state.activeId); if(!t) return; t.fields.push({ key:'field_'+(t.fields.length+1), label:'字段'+(t.fields.length+1), type:'text', placeholder:'在此输入…', allowCustom:false, required:false }); dirty=true; renderFieldsDesigner(); });
-    $('#importCode')?.addEventListener('click', ()=>{ $('#importArea')?.classList.toggle('hidden'); $('#importActions')?.classList.toggle('hidden'); });
+    $('#importCode')?.addEventListener('click', ()=>{ $('#importArea')?.classList.remove('hidden'); $('#importActions')?.classList.remove('hidden'); });
     $('#importHelp')?.addEventListener('click', ()=>{ const sample={"name":"新场景","content":"【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n...","fields":[{"key":"thing","label":"事项","type":"select","options":["A","B","C"],"default":"A","allowCustom":true,"required":true},{"key":"input","label":"输入内容","type":"textarea","placeholder":"在此粘贴…"}]}; navigator.clipboard.writeText(JSON.stringify(sample,null,2)); toast('已复制示例 JSON'); });
     $('#parseImport')?.addEventListener('click', ()=>{ try{ const raw=($('#importText').value||''); const obj=JSON.parse(raw.replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false')); $('#name').value=obj.name||''; $('#content').value=obj.content||''; renderPills(); const t=state.templates.find(x=>x.id===state.activeId); if(!t) return; t.fields=Array.isArray(obj.fields)?obj.fields:[]; renderFieldsDesigner(); toast('已填充导入内容'); }catch(e){ toast('解析失败：'+e.message); } });
-    $('#cancelImport')?.addEventListener('click', ()=>{ $('#importArea')?.classList.add('hidden'); $('#importActions')?.classList.add('hidden'); });
+    $('#cancelImport')?.addEventListener('click', ()=>{ $('#importArea')?.classList.add('hidden'); $('#importActions')?.classList.add('hidden'); const ta=$('#importText'); if(ta) ta.value=''; });
     $('#copy')?.addEventListener('click', ()=>onCopyOrInsert('copy'));
     $('#insert')?.addEventListener('click', ()=>onCopyOrInsert('insert'));
     $('#send')?.addEventListener('click', ()=>onCopyOrInsert('send'));
@@ -366,7 +386,7 @@
     });
     $('#resetDefaults')?.addEventListener('click', async ()=>{ if(confirm('将清空当前模板并恢复预置模板，是否继续？')){ await storage.set({ templates:null, [LAST_KEY]:null }); location.reload(); } });
     $('#provider')?.addEventListener('change', ()=>{ const p=$('#provider').value; const map={chatgpt:{regularURL:'https://chatgpt.com',temporaryURL:'https://chatgpt.com/?temporary-chat=true'},kimi:{regularURL:'https://www.kimi.com',temporaryURL:'https://www.kimi.com'},deepseek:{regularURL:'https://chat.deepseek.com',temporaryURL:'https://chat.deepseek.com'}}; $('#backendRegular').value=map[p].regularURL; $('#backendTemporary').value=map[p].temporaryURL; });
-    $('#saveSettings')?.addEventListener('click', async ()=>{ settings.provider=$('#provider').value; const map={chatgpt:{regularURL:'https://chatgpt.com',temporaryURL:'https://chatgpt.com/?temporary-chat=true'},kimi:{regularURL:'https://www.kimi.com',temporaryURL:'https://www.kimi.com'},deepseek:{regularURL:'https://chat.deepseek.com',temporaryURL:'https://chat.deepseek.com'}}; const preset=map[settings.provider]||map.chatgpt; settings.regularURL=($('#backendRegular').value||'').trim()||preset.regularURL; settings.temporaryURL=($('#backendTemporary').value||'').trim()||preset.temporaryURL; settings.theme=$('#theme').value||'system'; await storage.set({ [SETTINGS_KEY]:settings }); applyTheme(); toast('已保存设置'); });
+    $('#saveSettings')?.addEventListener('click', async ()=>{ settings.provider=$('#provider').value; const map={chatgpt:{regularURL:'https://chatgpt.com',temporaryURL:'https://chatgpt.com/?temporary-chat=true'},kimi:{regularURL:'https://www.kimi.com',temporaryURL:'https://www.kimi.com'},deepseek:{regularURL:'https://chat.deepseek.com',temporaryURL:'https://chat.deepseek.com'}}; const preset=map[settings.provider]||map.chatgpt; settings.regularURL=("#backendRegular" in window?$('#backendRegular').value:'')||$('#backendRegular').value; settings.regularURL=(settings.regularURL||'').trim()||preset.regularURL; settings.temporaryURL=(('#backendTemporary' in window?$('#backendTemporary').value:'')||$('#backendTemporary').value||'').trim()||preset.temporaryURL; settings.theme=$('#theme').value||'system'; await storage.set({ [SETTINGS_KEY]:settings }); applyTheme(); toast('已保存设置'); });
     $('#resetSettings')?.addEventListener('click', async ()=>{ settings={ ...DEFAULT_SETTINGS }; $('#provider').value=settings.provider; $('#backendRegular').value=settings.regularURL; $('#backendTemporary').value=settings.temporaryURL; $('#theme').value=settings.theme; await storage.set({ [SETTINGS_KEY]:settings }); const root=document.documentElement; root.removeAttribute('data-theme'); toast('已恢复默认'); });
   }
 
