@@ -392,15 +392,18 @@
     });
     $('#modalHelp')?.addEventListener('click', ()=>{
       const sample={
-        name:"新场景",
-        content:"【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n...",
+        name:"新场景（请改为你的场景名称）",
+        content:
+"【说明】\n这是一个 Prompt 模板文件，用于在扩展中作为“内容模板”。\n- content 字段是整体提示词正文，支持 {{key}} 占位符；\n- fields 数组定义了可填参数（类型、标签、默认值等）；\n- 支持的类型：text / textarea / select；select 允许 options、default；\n\n【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n……（在此描述你希望模型输出的结构）\n\n【注意】\n- 若需要条件分支，可在 content 用自然语言标注，例如“若为 X：…”。\n- 解析后可在插件中“插入/插入并发送”。",
         fields:[
           { key:"thing", label:"事项", type:"select", options:["A","B","C"], default:"A", allowCustom:true, required:true },
-          { key:"input", label:"输入内容", type:"textarea", placeholder:"在此粘贴…" }
+          { key:"input", label:"输入内容", type:"textarea", placeholder:"在此粘贴…", required:true }
         ]
       };
       navigator.clipboard.writeText(JSON.stringify(sample, null, 2)).then(()=>{
-        toast('已复制示例：请发送给 ChatGPT 生成你的模板');
+        const helpEl = document.getElementById('modalHelp');
+        if(helpEl){ helpEl.setAttribute('title','复制样例代码'); }
+        toast('已复制样例代码：可直接发给 ChatGPT 生成你的模板');
       }).catch(()=> toast('复制失败'));
     });
 
