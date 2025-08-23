@@ -454,8 +454,45 @@
       });
     });
     $('#resetDefaults')?.addEventListener('click', async ()=>{ if(confirm('将清空当前模板并恢复预置模板，是否继续？')){ await storage.set({ templates:null, [LAST_KEY]:null }); location.reload(); } });
-    $('#provider')?.addEventListener('change', ()=>{ const p=$('#provider').value; const map={chatgpt:{regularURL:'https://chatgpt.com',temporaryURL:'https://chatgpt.com/?temporary-chat=true'},kimi:{regularURL:'https://www.kimi.com',temporaryURL:'https://www.kimi.com'},deepseek:{regularURL:'https://chat.deepseek.com',temporaryURL:'https://chat.deepseek.com'}}; $('#backendRegular').value=map[p].regularURL; $('#backendTemporary').value=map[p].temporaryURL; });
-    $('#saveSettings')?.addEventListener('click', async ()=>{ settings.provider=$('#provider').value; const map={chatgpt:{regularURL:'https://chatgpt.com',temporaryURL:'https://chatgpt.com/?temporary-chat=true'},kimi:{regularURL:'https://www.kimi.com',temporaryURL:'https://www.kimi.com'},deepseek:{regularURL:'https://chat.deepseek.com',temporaryURL:'https://chat.deepseek.com'}}; const preset=map[settings.provider]||map.chatgpt; settings.regularURL=("#backendRegular" in window?$('#backendRegular').value:'')||$('#backendRegular').value; settings.regularURL=(settings.regularURL||'').trim()||preset.regularURL; settings.temporaryURL=(('#backendTemporary' in window?$('#backendTemporary').value:'')||$('#backendTemporary').value||'').trim()||preset.temporaryURL; settings.theme=$('#theme').value||'system'; await storage.set({ [SETTINGS_KEY]:settings }); applyTheme(); toast('已保存设置'); });
+    // Provider cards
+    const providerMap = {
+      chatgpt: { regularURL:'https://chatgpt.com', temporaryURL:'https://chatgpt.com/?temporary-chat=true' },
+      kimi: { regularURL:'https://www.kimi.com', temporaryURL:'https://www.kimi.com' },
+      deepseek: { regularURL:'https://chat.deepseek.com', temporaryURL:'https://chat.deepseek.com' },
+      perplexity: { regularURL:'https://www.perplexity.ai', temporaryURL:'https://www.perplexity.ai' }
+    };
+    function applyProviderSelection(pv){
+      const cards = Array.from(document.querySelectorAll('.provider-card'));
+      cards.forEach(c=> c.classList.toggle('active', c.dataset.pv===pv));
+      if(pv==='custom'){
+        $('#customUrlRows')?.classList.remove('hidden');
+      }else{
+        $('#customUrlRows')?.classList.add('hidden');
+        const preset = providerMap[pv]||providerMap.chatgpt;
+        settings.regularURL = preset.regularURL;
+        settings.temporaryURL = preset.temporaryURL;
+      }
+      settings.provider = pv;
+    }
+    const cardsRoot = $('#providerCards');
+    if(cardsRoot){
+      cardsRoot.addEventListener('click',(e)=>{
+        const btn = e.target.closest('.provider-card');
+        if(!btn) return;
+        applyProviderSelection(btn.dataset.pv);
+      });
+      // init selection
+      applyProviderSelection(settings.provider||'chatgpt');
+    }
+    $('#saveSettings')?.addEventListener('click', async ()=>{
+      if(settings.provider==='custom'){
+        settings.regularURL = ($('#backendRegular').value||'').trim();
+        settings.temporaryURL = ($('#backendTemporary').value||'').trim();
+      }
+      settings.theme=$('#theme').value||'system';
+      await storage.set({ [SETTINGS_KEY]:settings });
+      applyTheme(); toast('已保存设置');
+    });
     $('#resetSettings')?.addEventListener('click', async ()=>{ settings={ ...DEFAULT_SETTINGS }; $('#provider').value=settings.provider; $('#backendRegular').value=settings.regularURL; $('#backendTemporary').value=settings.temporaryURL; $('#theme').value=settings.theme; await storage.set({ [SETTINGS_KEY]:settings }); const root=document.documentElement; root.removeAttribute('data-theme'); toast('已恢复默认'); });
   }
 
