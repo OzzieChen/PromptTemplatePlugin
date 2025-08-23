@@ -1,7 +1,7 @@
 
-// v2.11.1.1 - editor UI upgrade + import modal; scripts/popup.js
+// v2.11.1.2 - editor UI upgrade + import modal; scripts/popup.js
 (function(){
-  console.log('[PTS] popup v2.11.1.1 up');
+  console.log('[PTS] popup v2.11.1.2 up');
 
   function $(s){ return document.querySelector(s); }
   function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent=msg||''; el.classList.add('show'); setTimeout(()=>{ el.classList.remove('show'); el.textContent=''; }, 1600); }
@@ -394,9 +394,10 @@
       const sample={
         name:"新场景（请改为你的场景名称）",
         content:
-"【说明】\n这是一个 Prompt 模板文件，用于在扩展中作为“内容模板”。\n- content 字段是整体提示词正文，支持 {{key}} 占位符；\n- fields 数组定义了可填参数（类型、标签、默认值等）；\n- 支持的类型：text / textarea / select；select 允许 options、default；\n\n【任务】\n请处理：{{thing}}\n【输入】\n{{input}}\n【输出】\n……（在此描述你希望模型输出的结构）\n\n【注意】\n- 若需要条件分支，可在 content 用自然语言标注，例如“若为 X：…”。\n- 解析后可在插件中“插入/插入并发送”。",
+"【说明】\n这是一个 Prompt 模板文件，用于在扩展中作为“内容模板”。\n- content 字段是整体提示词正文，支持 {{key}} 占位符；\n- fields 数组定义了可填参数（类型、标签、默认值等）；\n- 支持的类型：text（单行文本）/ textarea（多行文本）/ select（下拉选项，支持 options 与 default）；\n\n【任务】\n请处理：{{thing}}\n【输入】\n主题：{{title}}\n正文：{{input}}\n【输出】\n……（在此描述你希望模型输出的结构）\n\n【注意】\n- 若需要条件分支，可在 content 用自然语言标注，例如“若为 X：…”。\n- 解析后可在插件中“插入/插入并发送”。",
         fields:[
           { key:"thing", label:"事项", type:"select", options:["A","B","C"], default:"A", allowCustom:true, required:true },
+          { key:"title", label:"主题标题", type:"text", placeholder:"一句话主题", required:false },
           { key:"input", label:"输入内容", type:"textarea", placeholder:"在此粘贴…", required:true }
         ]
       };
