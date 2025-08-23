@@ -374,8 +374,21 @@
 
     // New import modal
     const overlay=$('#importOverlay');
-    const openImport=()=>{ overlay?.classList.add('show'); };
-    const closeImport=()=>{ if(!overlay) return; overlay.classList.remove('show'); const ta=$('#modalImportText'); if(ta) ta.value=''; };
+    const container = document.querySelector('.container');
+    const openImport=()=>{
+      if(!overlay) return;
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+      container?.setAttribute('inert','');
+      setTimeout(()=>{ try{ $('#modalImportText')?.focus(); }catch(e){} }, 0);
+    };
+    const closeImport=()=>{
+      if(!overlay) return;
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden','true');
+      container?.removeAttribute('inert');
+      const ta=$('#modalImportText'); if(ta) ta.value='';
+    };
     $('#openImportModal')?.addEventListener('click', openImport);
     $('#modalCancel')?.addEventListener('click', closeImport);
     $('#modalParse')?.addEventListener('click', ()=>{
