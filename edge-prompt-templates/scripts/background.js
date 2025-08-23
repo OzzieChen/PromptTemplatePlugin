@@ -1,5 +1,5 @@
 
-console.log('[PTS] background v2.4.8 up');
+console.log('[PTS] background v2.4.10.5 up');
 function execOnTab(tabId, args, func){
   return new Promise((resolve)=>{
     try{
@@ -12,23 +12,28 @@ function execOnTab(tabId, args, func){
   });
 }
 async function injectFlow(tabId, text, doSend){
-  // keep original executeScript path; add fallback to content script messaging if wrote is false
   const res = await execOnTab(tabId, [text, !!doSend], async (text, doSend)=>{
     const EDITABLE = [
       'textarea#prompt-textarea',
       'textarea[data-testid="prompt-textarea"]',
       'form textarea',
       'div[data-testid="composer"] textarea',
+      'div[data-testid="prompt-textarea"]',
       'textarea[placeholder*="Message"]',
       'div[contenteditable="true"][role="textbox"]',
+      'div[contenteditable="true"]',
       '[role="textbox"]',
-      'textarea'
+      'textarea',
+      'input[type="text"]',
+      'input[type="search"]'
     ];
     const SEND = [
       'button[data-testid="send-button"]',
       'button[aria-label="Send"]',
       'button[aria-label="Send message"]',
       'button[aria-label*="发送"]',
+      'button[aria-label*="送出"]',
+      'button[aria-label*="发送消息"]',
       'button[aria-label*="send" i]',
       'button[type="submit"]',
       'form button:not([disabled])'
@@ -47,6 +52,13 @@ async function injectFlow(tabId, text, doSend){
         return null;
       }
       return dfs(root||document);
+    }
+    function isEditable(el){
+      if(!el) return false;
+      const tag=(el.tagName||'').toLowerCase();
+      if(tag==='textarea' || tag==='input') return true;
+      if(el.getAttribute && el.getAttribute('contenteditable')==='true') return true;
+      return false;
     }
     function setNativeValueAndEvents(el, val){
       if(!el) return false;
@@ -71,11 +83,7 @@ async function injectFlow(tabId, text, doSend){
           el.dispatchEvent(new Event('change', { bubbles:true }));
           return true;
         }
-        el.focus();
-        el.textContent = val;
-        el.dispatchEvent(new Event('input', { bubbles:true }));
-        el.dispatchEvent(new Event('change', { bubbles:true }));
-        return true;
+        return false;
       }catch(e){ return false; }
     }
     function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -108,47 +116,63 @@ async function injectFlow(tabId, text, doSend){
       }catch(e){}
       return false;
     }
-    async function waitForComposer(ms=24000){
+    async function waitForComposer(ms=30000){
       const start=Date.now();
       return await new Promise((resolve)=>{
         const tick=()=>{
-          const el=findEditable(document) || document.activeElement;
+          const found=findEditable(document);
+          const el = found || (document.activeElement && isEditable(document.activeElement) ? document.activeElement : null);
           if(el){ resolve(el); return; }
           if(Date.now()-start>ms){ resolve(null); return; }
           setTimeout(tick, 300);
-        }; tick();
+        }; setTimeout(tick, 300);
       });
     }
-    const el = await waitForComposer(24000);
+    const el = await waitForComposer(30000);
     const wrote = !!el && setNativeValueAndEvents(el, text);
     let sent = false;
-    if(wrote && doSend){ await sleep(260); sent = await trySend(el); }
+    if(wrote && doSend){ await sleep(300); sent = await trySend(el); }
     return { ok: wrote || sent, wrote, sent };
   });
   if(res && (res.wrote || res.sent)) return res;
-  // fallback: ask content script to handle
+  // guarded content-script fallback
   try{
+    const t = await new Promise((resolve)=>{ try{ chrome.tabs.get(tabId, (tab)=>resolve(tab||null)); }catch(e){ resolve(null); } });
+    const okHost = t?.url && /^(https:\/\/)(chatgpt\.com|chat\.openai\.com|www\.kimi\.com|kimi\.moonshot\.cn|chat\.deepseek\.com)\//.test(t.url);
+    if(!okHost) return res || { ok:false };
     const r = await new Promise((resolve)=>{
-      chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>resolve(rr||{ok:false}));
+      try{
+        chrome.tabs.sendMessage(tabId, { type:'FILL_AND_SEND', text, send:!!doSend }, (rr)=>{
+          if(chrome.runtime.lastError){ resolve({ ok:false }); return; }
+          resolve(rr||{ ok:false });
+        });
+      }catch(e){ resolve({ ok:false }); }
     });
     return r || { ok:false };
   }catch(e){ return res || { ok:false, error:String(e) }; }
 }
 
-async function ensureOpenAndInject(primary, text, doSend){
+function hostGroupFromUrl(u){
   try{
-    const [active] = await chrome.tabs.query({ active:true, currentWindow:true });
-    function hostGroupFromUrl(u){
-      try{
-        const h=new URL(u).host;
-        if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
-        if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
-        if(h==='chat.deepseek.com') return 'deepseek';
-        return h;
-      }catch(e){ return ''; }
-    }
-    const sameEngine = (u1, u2) => hostGroupFromUrl(u1) === hostGroupFromUrl(u2);
-    async function retryInject(tabId, tries=5, gap=600){
+    const h=new URL(u).host;
+    if(h==='chatgpt.com' || h==='chat.openai.com') return 'chatgpt';
+    if(h==='www.kimi.com' || h==='kimi.moonshot.cn') return 'kimi';
+    if(h==='chat.deepseek.com') return 'deepseek';
+    return h;
+  }catch(e){ return ''; }
+}
+function sameEngine(u1, u2){ return hostGroupFromUrl(u1) === hostGroupFromUrl(u2); }
+function isTemporaryUrl(u){
+  try{
+    const url = new URL(u);
+    const grp = hostGroupFromUrl(u);
+    if(grp==='chatgpt') return url.searchParams.get('temporary-chat') === 'true';
+    return false;
+  }catch(e){ return false; }
+}
+async function ensureOpenAndInject(primary, text, doSend, preferTemporary){
+  try{
+    async function retryInject(tabId, tries=4, gap=500){
       for(let i=0;i<tries;i++){
         const r = await injectFlow(tabId, text, doSend);
         if(r && (r.wrote||r.sent)) return r;
@@ -156,11 +180,29 @@ async function ensureOpenAndInject(primary, text, doSend){
       }
       return null;
     }
-    if(active?.id && active?.url && sameEngine(active.url, primary)){
-      const r = await retryInject(active.id, 5, 600);
-      if(r && (r.wrote || r.sent)) return r;
-    }
-    // open new window or tab and inject with retries
+    // Prefer existing tabs first, respecting temporary preference
+    try{
+      const allTabs = await chrome.tabs.query({});
+      const lastWin = await chrome.windows.getLastFocused({ populate:false }).catch(()=>null);
+      const tabsSameEngine = allTabs.filter(t=> t.url && sameEngine(t.url, primary));
+      const tempTabs = tabsSameEngine.filter(t=> isTemporaryUrl(t.url));
+      const regTabs = tabsSameEngine.filter(t=> !isTemporaryUrl(t.url));
+      const order = preferTemporary ? [...tempTabs, ...regTabs] : [...regTabs, ...tempTabs];
+      order.sort((a,b)=>{
+        const aL = (lastWin && a.windowId===lastWin.id) ? 1:0;
+        const bL = (lastWin && b.windowId===lastWin.id) ? 1:0;
+        const aA = a.active ? 1:0; const bA = b.active ? 1:0;
+        return (bL - aL) || (bA - aA) || 0;
+      });
+      for(const t of order){
+        if(preferTemporary && !isTemporaryUrl(t.url)) break; // do not inject regular when temp requested
+        try{ await chrome.windows.update(t.windowId, { focused:true }); }catch(e){}
+        try{ await chrome.tabs.update(t.id, { active:true }); }catch(e){}
+        const r = await retryInject(t.id, 4, 500);
+        if(r && (r.wrote||r.sent)) return r;
+      }
+    }catch(e){}
+    // open new window or tab and inject with retries to the requested primary URL
     const openAndWait = () => new Promise((resolve)=>{
       const onReady = (tabId) => {
         let attempts = 0;
@@ -170,9 +212,9 @@ async function ensureOpenAndInject(primary, text, doSend){
           const rr = await injectFlow(tabId, text, doSend);
           if(rr && (rr.wrote||rr.sent)){ resolve(rr); return; }
           if(attempts>=maxAttempts){ resolve(rr||{ok:false}); return; }
-          setTimeout(tick, 800);
+          setTimeout(tick, 700);
         };
-        setTimeout(tick, 1200);
+        setTimeout(tick, 900);
       };
       const fallbackToTab = () => {
         chrome.tabs.create({ url: primary, active: true }, (nt)=>{ if(nt?.id) onReady(nt.id); else resolve({ ok:false, error:'无法创建标签页' }); });
@@ -210,26 +252,27 @@ chrome.runtime.onMessage.addListener((m, s, send)=>{
         const isChatgptGroup = (u)=>{ try{ const h=new URL(u).host; return (h==='chatgpt.com'||h==='chat.openai.com'); }catch(e){ return false; } };
         const candidates = [];
         if(isChatgptGroup(regular)){
-          const base1 = 'https://chatgpt.com';
-          const base2 = 'https://chat.openai.com';
           const prim = temp ? temporary : regular;
           const primHost = new URL(prim).host;
           const altHost = primHost==='chatgpt.com' ? 'chat.openai.com' : 'chatgpt.com';
           const alt = prim.replace(primHost, altHost);
           candidates.push(prim);
           if(alt!==prim) candidates.push(alt);
-          // also try regular counterpart if temp fails
           if(temp){
-            const primReg = regular;
-            const altReg = primReg.replace(new URL(primReg).host, altHost);
-            if(!candidates.includes(primReg)) candidates.push(primReg);
-            if(!candidates.includes(altReg)) candidates.push(altReg);
+            const regPrim = regular;
+            const regAlt = regPrim.replace(new URL(regPrim).host, altHost);
+            if(!candidates.includes(regPrim)) candidates.push(regPrim);
+            if(!candidates.includes(regAlt)) candidates.push(regAlt);
           }
         } else {
           candidates.push(temp ? temporary : regular);
         }
         let res=null;
-        for(const url of candidates){ res = await ensureOpenAndInject(url, text, doSend); if(res && (res.wrote||res.sent)) break; }
+        for(const url of candidates){
+          const preferTemp = temp && isChatgptGroup(url);
+          res = await ensureOpenAndInject(url, text, doSend, preferTemp);
+          if(res && (res.wrote||res.sent)) break;
+        }
         send(res && (res.wrote || res.sent) ? { ok:true, wrote:!!res.wrote, sent:!!res.sent } : { ok:false, error:'注入失败（未找到输入框或发送失败）' });
       }catch(e){ send({ok:false,error:String(e)}); }
     })(); return true;

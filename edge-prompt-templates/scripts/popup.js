@@ -1,7 +1,7 @@
 
-// v2.4.8 - resilient messaging; scripts/popup.js
+// v2.4.10.5 - perf + focus tab + temp logic; scripts/popup.js
 (function(){
-  console.log('[PTS] popup v2.4.8 up');
+  console.log('[PTS] popup v2.4.10.5 up');
 
   function $(s){ return document.querySelector(s); }
   function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent=msg||''; el.classList.add('show'); setTimeout(()=>{ el.classList.remove('show'); el.textContent=''; }, 1600); }
@@ -260,6 +260,7 @@
       const urls={ regular: settings.regularURL, temporary: settings.temporaryURL };
       if(act==='copy'){ navigator.clipboard.writeText(txt).then(()=>toast('已复制')); }
       else{
+        toast('处理中…');
         safeSendMessage({ type:'INJECT_TO_CHATGPT', text:txt, send:(act==='send'), tmp:!!t.tmpChat, urls }, (res)=>{
           if(res?.ok){
             if(act==='send'){
