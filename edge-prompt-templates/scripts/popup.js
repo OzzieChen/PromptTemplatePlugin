@@ -491,6 +491,7 @@
       // init selection
       applyProviderSelection(settings.provider||'chatgpt');
     }
+    $('#providerCustomLink')?.addEventListener('click', ()=> applyProviderSelection('custom'));
     $('#saveSettings')?.addEventListener('click', async ()=>{
       if(settings.provider==='custom'){
         settings.regularURL = ($('#backendRegular').value||'').trim();

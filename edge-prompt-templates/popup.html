@@ -98,6 +98,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 .provider-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .provider-card{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;width:100%;justify-content:flex-start}
 .provider-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:color-mix(in lab,var(--accent-soft) 40%, var(--card))}
+.provider-actions{margin-top:6px;display:flex;justify-content:flex-end}
   </style>
 </head>
 <body class="popup">
@@ -160,8 +161,8 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
               <button type="button" class="provider-card" data-pv="kimi">Kimi</button>
               <button type="button" class="provider-card" data-pv="deepseek">DeepSeek</button>
               <button type="button" class="provider-card" data-pv="perplexity">Perplexity</button>
-              <button type="button" class="provider-card" data-pv="custom">自定义</button>
             </div>
+            <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a></div>
           </div>
         </div>
         <div id="customUrlRows" class="">
