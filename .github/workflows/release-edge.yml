@@ -4,9 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (default: read from manifest)'
+        description: 'Version to release (default: read from manifest or tag)'
         required: false
         default: ''
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -25,8 +28,13 @@ jobs:
 
       - name: Resolve version
         id: ver
+        shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            # from tag like v2.4.10.5
+            raw="$GITHUB_REF_NAME"
+            ver="${raw#v}"
+          elif [ -n "${{ github.event.inputs.version }}" ]; then
             ver="${{ github.event.inputs.version }}"
           else
             ver=$(node -p "require('./edge-prompt-templates/manifest.json').version")
@@ -35,8 +43,8 @@ jobs:
 
       - name: Prepare dist
         run: |
-          rm -rf dist
-          mkdir -p dist
+            rm -rf dist
+            mkdir -p dist
 
       - name: Zip folder into dist
         run: |
