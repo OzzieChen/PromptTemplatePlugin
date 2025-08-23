@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.2.4）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.2.6）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -43,7 +43,7 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.11.2.4`
+- 当前版本：`2.11.2.6`
 
 #### 2.11.2 变更
 - 设置页改为“服务提供商卡片”选择：ChatGPT/Kimi/DeepSeek/Perplexity/自定义。仅“自定义”显示 URL 输入。
@@ -80,13 +80,28 @@
 
 <div>
   <p><strong>首页（弹窗）</strong></p>
-  <img src="assets/home-popup.png" alt="首页（模板库/搜索，弹窗尺寸）" width="560">
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <img src="assets/home-popup-light.png" alt="首页 浅色" style="width:50%">
+    <img src="assets/home-popup-dark.png" alt="首页 深色" style="width:50%">
+  </div>
   <p><strong>模板详情页（弹窗）</strong></p>
-  <img src="assets/detail-popup.png" alt="模板详情页（弹窗尺寸）" width="560">
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <img src="assets/detail-popup-light.png" alt="详情 浅色" style="width:50%">
+    <img src="assets/detail-popup-dark.png" alt="详情 深色" style="width:50%">
+  </div>
   <p><strong>新建/编辑页（弹窗）</strong></p>
-  <img src="assets/edit-popup.png" alt="新建/编辑页（弹窗尺寸）" width="560">
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <img src="assets/edit-popup-light.png" alt="编辑 浅色" style="width:50%">
+    <img src="assets/edit-popup-dark.png" alt="编辑 深色" style="width:50%">
+  </div>
   <p><strong>代码导入弹窗（弹窗）</strong></p>
-  <img src="assets/edit-import-popup.png" alt="代码导入弹窗（弹窗尺寸）" width="560">
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <img src="assets/edit-import-popup-light.png" alt="导入 浅色" style="width:50%">
+    <img src="assets/edit-import-popup-dark.png" alt="导入 深色" style="width:50%">
+  </div>
   <p><strong>设置页（弹窗）</strong></p>
-  <img src="assets/settings-popup.png" alt="设置页（弹窗尺寸）" width="560">
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <img src="assets/settings-popup-light.png" alt="设置 浅色" style="width:50%">
+    <img src="assets/settings-popup-dark.png" alt="设置 深色" style="width:50%">
+  </div>
 </div>
