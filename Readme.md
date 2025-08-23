@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.9）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.1.2）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -43,7 +43,14 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.4.10.1`
+- 当前版本：`2.11.1.2`
+
+#### 2.11.1.2 变更
+- 导入弹窗：新增“问号”帮助按钮（左侧、垂直居中），悬浮提示“复制样例代码”；点击复制包含 text/textarea/select 三种类型说明的样例 JSON，便于直接发给 ChatGPT 生成模板。
+- 编辑器：字段编辑器按类型动态显隐（Select 显示“候选项/默认值”，Text/Textarea 显示“提示词”）。
+- UI：编辑器样式梳理，顶部右侧移入“导入代码”按钮并使用遮罩弹窗承载导入流程。
+- 稳定性：插入/发送流程即时反馈“处理中…”，并优化标签激活与临时会话优先级逻辑。
+
 
 #### 2.4.9 变更
 - 修复：在浏览器主页面失焦时“插入/插入并发送”不稳定问题；扩大编辑器选择器并仅在可编辑时使用 activeElement 兜底，移除会导致白屏的写入回退。
@@ -63,6 +70,7 @@
 - 首页：`assets/home-popup.png`
 - 模板详情页：`assets/detail-popup.png`
 - 新建/编辑页：`assets/edit-popup.png`
+- 代码导入弹窗：`assets/edit-import-popup.png`
 - 设置页：`assets/settings-popup.png`
 
 <div>
@@ -72,6 +80,8 @@
   <img src="assets/detail-popup.png" alt="模板详情页（弹窗尺寸）" width="560">
   <p><strong>新建/编辑页（弹窗）</strong></p>
   <img src="assets/edit-popup.png" alt="新建/编辑页（弹窗尺寸）" width="560">
+  <p><strong>代码导入弹窗（弹窗）</strong></p>
+  <img src="assets/edit-import-popup.png" alt="代码导入弹窗（弹窗尺寸）" width="560">
   <p><strong>设置页（弹窗）</strong></p>
   <img src="assets/settings-popup.png" alt="设置页（弹窗尺寸）" width="560">
 </div>
