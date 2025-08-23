@@ -61,6 +61,10 @@ async function ensureDir(p){ if(!fs.existsSync(p)) fs.mkdirSync(p, { recursive: 
   await sleep(200);
   await page.screenshot({ path: path.join(assetsDir, 'edit-import-popup.png') });
 
+  // Close import modal before navigating
+  await page.click('#modalCancel');
+  await page.waitForFunction(() => !document.querySelector('#importOverlay')?.classList.contains('show'));
+
   // Settings
   await page.click('#back1');
   await waitForCards(page);
