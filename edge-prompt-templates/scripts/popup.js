@@ -380,6 +380,29 @@
     });
   }
 
+  function showConfirm(message, okText, cancelText){
+    return new Promise(resolve=>{
+      try{
+        const overlay=document.createElement('div');
+        overlay.className='overlay show';
+        overlay.id='__pts_confirm_overlay__';
+        const modal=document.createElement('div');
+        modal.className='modal';
+        modal.innerHTML = `\n        <h3 style="margin:0 0 8px 0;font-size:16px">提示</h3>\n        <div class="body" style="margin-top:8px">${message||''}</div>\n        <div class="actions" style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;align-items:center">\n          <button id="__pts_confirm_cancel__">${cancelText||'取消'}</button>\n          <button id="__pts_confirm_ok__" class="primary">${okText||'确定'}</button>\n        </div>\n      `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        const cleanup=()=>{ try{ document.body.removeChild(overlay); }catch(e){} };
+        const onOk=()=>{ cleanup(); resolve(true); };
+        const onCancel=()=>{ cleanup(); resolve(false); };
+        modal.querySelector('#__pts_confirm_ok__')?.addEventListener('click', onOk);
+        modal.querySelector('#__pts_confirm_cancel__')?.addEventListener('click', onCancel);
+        overlay.addEventListener('click', (e)=>{ if(e.target===overlay) onCancel(); });
+        function onKey(e){ if(e.key==='Escape'){ document.removeEventListener('keydown', onKey); onCancel(); } }
+        document.addEventListener('keydown', onKey);
+      }catch(e){ resolve(window.confirm(message||'')===true); }
+    });
+  }
+
   function wire(){
     $('#search')?.addEventListener('input', ()=>{ renderGallery(); saveLast(); });
     $('#newBtn')?.addEventListener('click', ()=>{ const t={ id:crypto.randomUUID(), name:'', content:'', fields:[], tmpChat:false, createdAt:Date.now() }; state.templates.unshift(t); state.activeId=t.id; save().then(()=>{ select(t.id); openEdit(); }); });
@@ -404,13 +427,15 @@
       };
       const hasChanges = (prev.provider!==settings.provider) || (prev.theme!==cur.theme) || (prev.regularURL!==cur.regularURL) || (prev.temporaryURL!==cur.temporaryURL);
       if(settings.provider==='custom' && !cur.regularURL){
-        const ok = confirm('缺少必填项：常规会话 URL。确认放弃并返回？\n确认：取消自定义并恢复之前的选择\n取消：继续填写');
-        if(!ok){ return; }
-        // restore previous snapshot and exit settings
-        settings = { ...prev };
-        if($('#backendRegular')) $('#backendRegular').value = '';
-        if($('#backendTemporary')) $('#backendTemporary').value = '';
-        setMode('gallery'); renderGallery(); return;
+        showConfirm('缺少必填项：常规会话 URL。确认放弃并返回？','放弃','取消').then(ok=>{
+          if(!ok){ return; }
+          // restore previous snapshot and exit settings
+          settings = { ...prev };
+          if($('#backendRegular')) $('#backendRegular').value = '';
+          if($('#backendTemporary')) $('#backendTemporary').value = '';
+          setMode('gallery'); renderGallery();
+        });
+        return;
       }
       if(hasChanges){
         const ok = confirm('是否保存更改？');
