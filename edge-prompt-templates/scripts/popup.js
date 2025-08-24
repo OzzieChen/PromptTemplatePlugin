@@ -391,12 +391,41 @@
       if($('#backendTemporary')) $('#backendTemporary').value = isCustom ? (settings.temporaryURL||'') : '';
       const tick=document.getElementById('providerCustomTick'); if(tick) tick.style.display = isCustom ? 'inline-flex' : 'none';
       if($('#theme')) $('#theme').value = settings.theme || 'system';
+      try{ window.__settingsPrevSnapshot__ = JSON.parse(JSON.stringify(settings)); }catch(e){ window.__settingsPrevSnapshot__ = { ...settings }; }
     });
     $('#back1')?.addEventListener('click', ()=>{ if(dirty){ if(confirm('是否保存当前更改？')){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
     $('#back3')?.addEventListener('click', ()=>{
-      // validate settings when leaving settings
-      if((settings.provider==='custom') && !($('#backendRegular')?.value||'').trim()){
-        alert('请填写常规会话 URL，或选择预置提供商');
+      const prev = window.__settingsPrevSnapshot__ || { ...settings };
+      const cur = {
+        provider: settings.provider,
+        regularURL: (settings.provider==='custom') ? ($('#backendRegular')?.value||'').trim() : settings.regularURL,
+        temporaryURL: (settings.provider==='custom') ? ($('#backendTemporary')?.value||'').trim() : settings.temporaryURL,
+        theme: ($('#theme')?.value||settings.theme)
+      };
+      const hasChanges = (prev.provider!==settings.provider) || (prev.theme!==cur.theme) || (prev.regularURL!==cur.regularURL) || (prev.temporaryURL!==cur.temporaryURL);
+      if(settings.provider==='custom' && !cur.regularURL){
+        const ok = confirm('缺少必填项：常规会话 URL。确认放弃并返回？\n确认：取消自定义并恢复之前的选择\n取消：继续填写');
+        if(!ok){ return; }
+        // restore previous snapshot and exit settings
+        settings = { ...prev };
+        if($('#backendRegular')) $('#backendRegular').value = '';
+        if($('#backendTemporary')) $('#backendTemporary').value = '';
+        setMode('gallery'); renderGallery(); return;
+      }
+      if(hasChanges){
+        const ok = confirm('是否保存更改？');
+        if(ok){
+          if(settings.provider==='custom'){
+            settings.regularURL = cur.regularURL;
+            settings.temporaryURL = cur.temporaryURL;
+          }
+          settings.theme = cur.theme;
+          saveSettings().then(()=>{ applyTheme(); setMode('gallery'); renderGallery(); });
+        } else {
+          // discard UI edits, restore previous snapshot
+          settings = { ...prev };
+          setMode('gallery'); renderGallery();
+        }
         return;
       }
       setMode('gallery'); renderGallery();
