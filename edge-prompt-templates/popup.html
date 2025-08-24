@@ -117,8 +117,8 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
 /* DeepSeek: if dark variant is not ideal, invert light on dark */
 /* no overrides for deepseek; use provided dark asset as-is */
 .provider-card .name{font-size:12px;color:var(--muted);line-height:1}
-.provider-card .tick{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--accent);background:var(--accent);display:none;align-items:center;justify-content:center}
-.provider-card .tick svg{width:12px;height:12px;display:block}
+.provider-card .tick{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;border:1px solid var(--accent);background:var(--accent);display:none;align-items:center;justify-content:center}
+.provider-card .tick svg{width:10px;height:10px;display:block}
 .provider-card.active .tick{display:flex}
 .provider-actions{margin-top:12px;display:flex;justify-content:flex-start}
   </style>
@@ -176,7 +176,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
     <div class="view-nav"><button id="back3" class="back">← 返回</button><div class="title">设置</div></div>
     <div class="card">
       <div class="settings">
-        <div class="row"><label class="small">后端大模型</label>
+        <div class="row" style="align-items:center"><label class="small">后端大模型</label>
           <div class="provider-wrap">
             <div class="provider-cards" id="providerCards">
               <button type="button" class="provider-card" data-pv="chatgpt" title="ChatGPT">
@@ -208,7 +208,7 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
                 <span class="fallback">Perplexity</span>
               </button>
             </div>
-            <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a></div>
+            <div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a><span id="providerCustomTick" class="tick" style="margin-left:6px;display:none"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></span></div>
           </div>
         </div>
         <div id="customUrlRows" class="">

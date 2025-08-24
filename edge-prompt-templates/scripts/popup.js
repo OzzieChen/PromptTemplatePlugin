@@ -383,6 +383,7 @@
       const isCustom = (settings.provider==='custom');
       if($('#backendRegular')) $('#backendRegular').value = isCustom ? (settings.regularURL||'') : '';
       if($('#backendTemporary')) $('#backendTemporary').value = isCustom ? (settings.temporaryURL||'') : '';
+      const tick=document.getElementById('providerCustomTick'); if(tick) tick.style.display = isCustom ? 'inline-flex' : 'none';
       if($('#theme')) $('#theme').value = settings.theme || 'system';
     });
     $('#back1')?.addEventListener('click', ()=>{ if(dirty){ if(confirm('是否保存当前更改？')){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
@@ -473,8 +474,10 @@
       cards.forEach(c=> c.classList.toggle('active', c.dataset.pv===pv));
       if(pv==='custom'){
         $('#customUrlRows')?.classList.remove('hidden');
+        const tick=document.getElementById('providerCustomTick'); if(tick) tick.style.display='inline-flex';
       }else{
         $('#customUrlRows')?.classList.add('hidden');
+        const tick=document.getElementById('providerCustomTick'); if(tick) tick.style.display='none';
         const preset = providerMap[pv]||providerMap.chatgpt;
         settings.regularURL = preset.regularURL;
         settings.temporaryURL = preset.temporaryURL;
