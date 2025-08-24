@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.2.8）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.3）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -43,7 +43,7 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.11.2.8`
+- 当前版本：`2.11.3`
 
 #### 2.11.2 变更
 - 设置页改为“服务提供商卡片”选择：ChatGPT/Kimi/DeepSeek/Perplexity/自定义。仅“自定义”显示 URL 输入。

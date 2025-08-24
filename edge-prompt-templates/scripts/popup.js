@@ -207,6 +207,12 @@
       row.appendChild(lab); row.appendChild(control); inputs.appendChild(row);
     });
     if($('#tmpChat')){ $('#tmpChat').checked=!!t.tmpChat; $('#tmpChat').onchange=()=>{ t.tmpChat=!!$('#tmpChat').checked; save(); }; }
+    const tmpRow=document.getElementById('tmpRow');
+    if(tmpRow){
+      const pv=(settings?.provider)||'chatgpt';
+      const showTmp = (pv==='chatgpt') || (pv==='custom' && (settings?.temporaryURL||'').trim());
+      tmpRow.style.display = showTmp ? '' : 'none';
+    }
     updatePreview(); saveLast();
   }
 
@@ -490,6 +496,8 @@
         const btn = e.target.closest('.provider-card');
         if(!btn) return;
         applyProviderSelection(btn.dataset.pv);
+        const tmpRow=document.getElementById('tmpRow');
+        if(tmpRow){ const pv=btn.dataset.pv; const showTmp = (pv==='chatgpt') || (pv==='custom' && (settings?.temporaryURL||'').trim()); tmpRow.style.display = showTmp ? '' : 'none'; }
       });
       // init selection
       applyProviderSelection(settings.provider||'chatgpt');
@@ -502,6 +510,9 @@
       }
       settings.theme=$('#theme').value||'system';
       await storage.set({ [SETTINGS_KEY]:settings });
+      // update tmp toggle visibility
+      const tmpRow=document.getElementById('tmpRow');
+      if(tmpRow){ const pv=settings.provider; const showTmp = (pv==='chatgpt') || (pv==='custom' && (settings?.temporaryURL||'').trim()); tmpRow.style.display = showTmp ? '' : 'none'; }
       applyTheme(); toast('已保存设置');
     });
     $('#resetSettings')?.addEventListener('click', async ()=>{ 
