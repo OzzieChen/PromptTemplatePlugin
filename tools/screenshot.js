@@ -18,7 +18,7 @@ async function captureVariant(page, fileUrl, theme, tmpNames){
   await page.evaluateOnNewDocument(() => {
     document.documentElement.setAttribute('lang','zh-CN');
     const style = document.createElement('style');
-    style.innerHTML = `*{ font-family: "Noto Sans CJK SC", "Noto Sans CJK", "Noto Sans SC", "WenQuanYi Zen Hei", "PingFang SC", "Microsoft YaHei UI", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important; }`;
+    style.innerHTML = `*{ font-family: "PingFang SC", "PingFang", "-apple-system", "Noto Sans SC", "Noto Sans CJK SC", "Noto Sans CJK", "WenQuanYi Zen Hei", "Microsoft YaHei UI", system-ui, Segoe UI, Roboto, Arial, sans-serif !important; }`;
     document.documentElement.appendChild(style);
     window.chrome = {
       runtime: { id: 'dev-stub', sendMessage: (payload, cb) => { try { cb && cb({ ok:false }); } catch(e){} } },
