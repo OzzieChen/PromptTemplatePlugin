@@ -393,6 +393,14 @@
       if($('#theme')) $('#theme').value = settings.theme || 'system';
     });
     $('#back1')?.addEventListener('click', ()=>{ if(dirty){ if(confirm('是否保存当前更改？')){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
+    $('#back3')?.addEventListener('click', ()=>{
+      // validate settings when leaving settings
+      if((settings.provider==='custom') && !($('#backendRegular')?.value||'').trim()){
+        alert('请填写常规会话 URL，或选择预置提供商');
+        return;
+      }
+      setMode('gallery'); renderGallery();
+    });
     $('#back2')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
     $('#back3')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
     $('#save')?.addEventListener('click', async ()=>{
