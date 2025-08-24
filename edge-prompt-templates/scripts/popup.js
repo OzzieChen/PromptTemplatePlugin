@@ -575,6 +575,7 @@
       // update tmp toggle visibility
       const tmpRow=document.getElementById('tmpRow');
       if(tmpRow){ const pv=settings.provider; const showTmp = (pv==='chatgpt') || (pv==='custom' && (settings?.temporaryURL||'').trim()); tmpRow.style.display = showTmp ? '' : 'none'; }
+      try{ window.__settingsPrevSnapshot__ = JSON.parse(JSON.stringify(settings)); }catch(e){ window.__settingsPrevSnapshot__ = { ...settings }; }
       applyTheme(); toast('已保存设置');
     });
     $('#resetSettings')?.addEventListener('click', async ()=>{ 
