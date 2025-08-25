@@ -43,53 +43,36 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.12.1.4`
+- 当前版本：`2.12.2`
 
 ### 打包到 dist
-- 运行 Actions 工作流 “Build dist package”，可在 dist 下生成版本化压缩包，并作为 Artifact 提供下载；勾选 `release=true` 可自动创建 Release 并上传该 zip。
+- 运行 Actions 工作流 “Build dist package” 生成 dist 下的版本化压缩包；或使用分支内的 dist 目录下载最新 zip。
 
-#### 2.11.2 变更
-- 设置页改为“服务提供商卡片”选择：ChatGPT/Kimi/DeepSeek/Perplexity/自定义。仅“自定义”显示 URL 输入。
-- 新增 Perplexity 预置支持并扩展权限与注入识别域名。
-- 侧边栏编辑器样式与交互与弹窗同步（导入代码弹窗、问号帮助、焦点与样式一致）。
+### 截图（浅色 / 深色）
+首页（弹窗）
 
-#### 2.11.1.2 变更
-- 导入弹窗：新增“问号”帮助按钮（左侧、垂直居中），悬浮提示“复制样例代码”；点击复制包含 text/textarea/select 三种类型说明的样例 JSON，便于直接发给 ChatGPT 生成模板。
-- 编辑器：字段编辑器按类型动态显隐（Select 显示“候选项/默认值”，Text/Textarea 显示“提示词”）。
-- UI：编辑器样式梳理，顶部右侧移入“导入代码”按钮并使用遮罩弹窗承载导入流程。
-- 稳定性：插入/发送流程即时反馈“处理中…”，并优化标签激活与临时会话优先级逻辑。
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/home-popup-light.png" alt="首页（浅色）" width="280">
+  <img src="assets/home-popup-dark.png" alt="首页（深色）" width="280">
+</div>
 
+模板详情（弹窗）
 
-#### 2.4.9 变更
-- 修复：在浏览器主页面失焦时“插入/插入并发送”不稳定问题；扩大编辑器选择器并仅在可编辑时使用 activeElement 兜底，移除会导致白屏的写入回退。
-- 修复：浅色主题下滚动条与复选框底色偏深；统一滚动条与复选框样式与对焦态。
-- 修复：编辑页面“开关”区域复选框与文字未垂直居中；使用 inline-flex 居中。
-- 修复：视图切换后首页滚动条不消失；规范容器 overflow 与页面高度。
-- 构建：新增 GitHub Actions 工作流 `package-edge-templates.yml`，仅打包 `edge-prompt-templates`，支持手动触发与按 tag 触发，可选自动创建 Release。
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/detail-popup-light.png" alt="详情（浅色）" width="280">
+  <img src="assets/detail-popup-dark.png" alt="详情（深色）" width="280">
+</div>
 
-### 截图（示例尺寸与说明）
-- 弹出页尺寸：宽 560px（以下截图均按真实弹窗宽度）
-- 首页（模板库/搜索）：560×860 PNG
-- 模板详情页（填充/预览/插入按钮）：560×980 PNG
-- 新建/编辑页面（字段设计器）：560×980 PNG
-- 设置页（提供商与主题）：560×900 PNG
+新建/编辑（弹窗）
 
-#### 示例截图（弹窗尺寸）
-- 首页（左：浅色｜右：深色）：`assets/home-popup.png`
-- 模板详情页（左：浅色｜右：深色）：`assets/detail-popup.png`
-- 新建/编辑页（左：浅色｜右：深色）：`assets/edit-popup.png`
-- 代码导入弹窗（左：浅色｜右：深色）：`assets/edit-import-popup.png`
-- 设置页（左：浅色｜右：深色）：`assets/settings-popup.png`
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/edit-popup-light.png" alt="编辑（浅色）" width="280">
+  <img src="assets/edit-popup-dark.png" alt="编辑（深色）" width="280">
+</div>
 
-<div>
-  <p><strong>首页（弹窗）</strong></p>
-  <img src="assets/home-popup.png" alt="首页（浅色/深色并排合成）" width="560">
-  <p><strong>模板详情页（弹窗）</strong></p>
-  <img src="assets/detail-popup.png" alt="详情（浅色/深色并排合成）" width="560">
-  <p><strong>新建/编辑页（弹窗）</strong></p>
-  <img src="assets/edit-popup.png" alt="编辑（浅色/深色并排合成）" width="560">
-  <p><strong>代码导入弹窗（弹窗）</strong></p>
-  <img src="assets/edit-import-popup.png" alt="导入（浅色/深色并排合成）" width="560">
-  <p><strong>设置页（弹窗）</strong></p>
-  <img src="assets/settings-popup.png" alt="设置（浅色/深色并排合成）" width="560">
+设置（弹窗）
+
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/settings-popup-light.png" alt="设置（浅色）" width="280">
+  <img src="assets/settings-popup-dark.png" alt="设置（深色）" width="280">
 </div>
