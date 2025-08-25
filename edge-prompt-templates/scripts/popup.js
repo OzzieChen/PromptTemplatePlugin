@@ -62,8 +62,8 @@
         {"key":"domain","label":"术语领域","type":"select","options":["云计算","AI","生活场景（如酒店）"],"allowCustom":true,"default":"云计算"},
         {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"在此粘贴/输入中文正文…","required":true}
       ],"tmpChat":false},
-      {"id":"tpl-conversation","name":"英语翻译（口语）","content":"【任务】\n将以下中文改写为地道、自然的口语英语，适配：\n- 场景：{{scene}}\n- 关系类型：{{relationship}}\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 英语表达 A / B / C（语气与用词贴合场景与关系）\n2) 中文要点：使用场景、语气建议、常见替代表达\n3) Mini phrasebook：3–5 条可复用表达","fields":[
-        {"key":"scene","label":"场景","type":"select","options":["日常交流","IM沟通","邮件简讯"],"allowCustom":true,"default":"日常交流","required":true},
+      {"id":"tpl-conversation","name":"英语翻译（口语）","content":"【任务】\n将以下中文改写为地道、自然的口语英语，适配：\n- 场景：{{scene}}\n- 关系类型：{{relationship}}\n- 英语变体：{{english_variant}}\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 英语表达 A / B / C（语气与用词贴合场景与关系与变体）\n2) 中文要点：使用场景、语气建议、常见替代表达\n3) Mini phrasebook：3–5 条可复用表达","fields":[
+        {"key":"scene","label":"场景","type":"select","options":["日常交流","IM沟通","邮件简讯"],"allowCustom":true,"default":"日常交流","required":false},
         {"key":"relationship","label":"关系类型","type":"select","options":["同事","客户","供应商（酒店、餐馆等）"],"allowCustom":true,"default":"同事"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
         {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"要表达的中文内容，例如说明、致谢、请求…","required":true}
