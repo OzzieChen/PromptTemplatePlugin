@@ -28,6 +28,7 @@
   const storage = wrapChromeStore(chrome.storage?.local) || makeLocalStore('__pts__');
   const LAST_KEY='__last_view__';
   const SETTINGS_KEY='__settings__';
+  const VALUES_KEY='__values_by_tpl__';
   const DEFAULT_SETTINGS = { provider:'chatgpt', regularURL:'https://chatgpt.com', temporaryURL:'https://chatgpt.com/?temporary-chat=true', theme:'system' };
 
   const ui = {
@@ -89,21 +90,24 @@
 
   async function load(){
     try{
-      const got = await storage.get({ templates:null, [SETTINGS_KEY]:DEFAULT_SETTINGS, [LAST_KEY]:null });
+      const got = await storage.get({ templates:null, [SETTINGS_KEY]:DEFAULT_SETTINGS, [LAST_KEY]:null, [VALUES_KEY]:{} });
       const defs = embeddedDefaults();
       const tpl = Array.isArray(got.templates) && got.templates.length ? got.templates : defs;
       state.templates = tpl;
       settings = got[SETTINGS_KEY] ? got[SETTINGS_KEY] : { ...DEFAULT_SETTINGS };
+      state.valuesByTpl = got[VALUES_KEY] || {};
       applyTheme();
     }catch(e){
       console.error('[PTS] load failed, using embedded defaults', e);
       state.templates = embeddedDefaults();
       settings = { ...DEFAULT_SETTINGS };
+      state.valuesByTpl = {};
       applyTheme();
     }
   }
   function save(){ return storage.set({ templates: state.templates }); }
   function saveSettings(){ return storage.set({ [SETTINGS_KEY]: settings }); }
+  function saveValuesByTpl(){ try{ return storage.set({ [VALUES_KEY]: state.valuesByTpl }); }catch(e){ return Promise.resolve(false); } }
   async function saveLast(){ try{ await storage.set({ [LAST_KEY]: { activeId:state.activeId, mode:state.mode, values:state.values } }); }catch(e){} }
   async function loadLast(){ try{ const obj=await storage.get(LAST_KEY); return obj[LAST_KEY]||null; }catch(e){ return null; } }
 
@@ -189,23 +193,23 @@
           wrap.appendChild(sel); wrap.appendChild(custom);
           sel.value = opts.includes(initialVal) ? initialVal : (initial ? '__custom__' : (opts[0]||''));
           if(sel.value==='__custom__'){ wrap.classList.add('active'); custom.value = initial; }
-          function sync(){ if(sel.value==='__custom__'){ wrap.classList.add('active'); state.values[f.key]=custom.value.trim(); } else { wrap.classList.remove('active'); state.values[f.key]=sel.value; } state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); }
+          function sync(){ if(sel.value==='__custom__'){ wrap.classList.add('active'); state.values[f.key]=custom.value.trim(); } else { wrap.classList.remove('active'); state.values[f.key]=sel.value; } state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl(); updatePreview(); saveLast(); }
           sel.addEventListener('change', ()=>{ if(sel.value==='__custom__'){ wrap.classList.add('active'); custom.focus(); } sync(); });
           custom.addEventListener('input', sync);
         } else {
           wrap.appendChild(sel);
           sel.value = opts.includes(initialVal) ? initialVal : (opts[0]||'');
-          sel.addEventListener('change', ()=>{ state.values[f.key]=sel.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
+          sel.addEventListener('change', ()=>{ state.values[f.key]=sel.value; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl(); updatePreview(); saveLast(); });
         }
-        control=wrap; state.values[f.key]=(f.allowCustom && sel.value==='__custom__')?initial:sel.value; state.valuesByTpl[state.activeId] = { ...state.values };
+        control=wrap; state.values[f.key]=(f.allowCustom && sel.value==='__custom__')?initial:sel.value; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl();
       }else if(f.type==='textarea'){
         const ta=document.createElement('textarea'); ta.className='control'; ta.placeholder=(f.placeholder||f.label||f.key); ta.value=initial;
-        ta.addEventListener('input',()=>{ state.values[f.key]=ta.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
-        control=ta; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values };
+        ta.addEventListener('input',()=>{ state.values[f.key]=ta.value; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl(); updatePreview(); saveLast(); });
+        control=ta; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl();
       }else{
         const inp=document.createElement('input'); inp.className='control'; inp.type='text'; inp.placeholder=(f.placeholder||f.label||f.key); inp.value=initial;
-        inp.addEventListener('input',()=>{ state.values[f.key]=inp.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
-        control=inp; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values };
+        inp.addEventListener('input',()=>{ state.values[f.key]=inp.value; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl(); updatePreview(); saveLast(); });
+        control=inp; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values }; saveValuesByTpl();
       }
       row.appendChild(lab); row.appendChild(control); inputs.appendChild(row);
     });
