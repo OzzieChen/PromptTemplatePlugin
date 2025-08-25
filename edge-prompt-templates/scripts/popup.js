@@ -42,7 +42,7 @@
     saveSettings: $('#saveSettings'), resetSettings: $('#resetSettings'), toast: $('#toast')
   };
 
-  let state={ templates:[], activeId:null, values:{}, mode:'gallery' };
+  let state={ templates:[], activeId:null, values:{}, valuesByTpl:{}, mode:'gallery' };
   let settings = { ...DEFAULT_SETTINGS };
   let dirty=false;
   let draggingId=null;
@@ -55,7 +55,7 @@
 
   function embeddedDefaults(){
     return [
-      {"id":"tpl-formal-writing","name":"英语翻译（书面）","content":"【任务】\n将以下中文内容翻译为用于{{scene}}的正式、精炼英语，依据“类型”选择合适的呈现方式。\n- 类型=标题：给出 3 个信息密度高、专业、非口语化标题候选（尽量短）。\n- 类型=正文：以条理清晰的分点（1–3 层级）表达，句式紧凑、主谓明确、避免冗词。\n\n【输入】\n---\n{{source_text}}\n---\n\n【要求】\n- 英语变体：{{english_variant}}。\n- 术语领域：{{domain}}，保持术语一致性。\n\n【输出】\n1) 主版本（按“类型”与“场景”呈现）\n2) 可选替代版本（2 个）\n3) 说明（简述措辞选择/取舍依据）","fields":[
+      {"id":"tpl-formal-writing","name":"英语翻译（书面）","content":"【任务】\n将以下中文内容翻译为用于{{scene}}的正式、精炼英语。\n- 当前类型：{{type}}（若为“标题”，仅输出标题候选；若为“正文”，用条理清晰的分点表达）。\n\n【输入】\n---\n{{source_text}}\n---\n\n【要求】\n- 英语变体：{{english_variant}}；术语领域：{{domain}}（保持一致性）。\n\n【输出】\n1) 主版本（严格符合 {{type}} 与 {{scene}}）\n2) 可选替代版本（2 个）\n3) 说明（简述措辞选择/取舍依据）","fields":[
         {"key":"type","label":"类型","type":"select","options":["标题","正文"],"allowCustom":false,"default":"标题","required":true},
         {"key":"scene","label":"场景","type":"select","options":["PPT书面材料","正式邮件","IM沟通"],"allowCustom":true,"default":"PPT书面材料"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
@@ -81,7 +81,7 @@
         {"key":"constraints","label":"约束","type":"text","placeholder":"如：只能读权限/无公网/必须零停机等"},
         {"key":"audience","label":"受众","type":"select","options":["初学者","中级工程师","高级架构师","客户答复"],"allowCustom":true,"default":"中级工程师"}
       ],"tmpChat":false},
-      {"id":"tpl-english-comprehension","name":"英语理解","content":"【目标】\n帮助用户深入理解一段英语（单词/短语/句子/长难句）。\n\n【英语原文】\n{{source_en}}\n\n【输出】\n1) 中文翻译（准确、自然）\n2) 句法/语法分析（拆解句子结构，解释从句、时态、搭配）\n3) 长难句拆解（逐步还原主干与修饰）\n4) 常用词组与搭配（总结 5–8 条，便于复用）\n5) 学习建议（如何在相似语境下表达）","fields":[
+      {"id":"tpl-english-comprehension","name":"英语理解","content":"【目标】\n帮助用户深入理解一段英语（单词/短语/句子/长难句），根据原文复杂度自适应输出。\n\n【英语原文】\n{{source_en}}\n\n【输出】\n- 若为单词/短语：给出中文释义、常见搭配与例句（≥3），区分词性/语境差异。\n- 若为普通句子：中文翻译 + 关键语法点简析（时态/从句/搭配）。\n- 若为长难句：中文翻译 + 句法树式拆解（主干/从句/修饰）+ 关键语法说明。\n- 常用表达：总结 5–8 条可迁移的表达或模式。\n- 学习建议：如何在相似语境下表达。","fields":[
         {"key":"source_en","label":"英语原文","type":"textarea","placeholder":"粘贴需要理解的英文单词/短语/句子…","required":true}
       ],"tmpChat":false}
     ];
@@ -168,7 +168,8 @@
     setMode('fill');
     const t=state.templates.find(x=>x.id===state.activeId)||{};
     if($('#fillTitle')) $('#fillTitle').textContent=t.name||'';
-    if(!keepValues) state.values={};
+    if(!keepValues){ state.values={}; }
+    else { state.values = state.valuesByTpl[state.activeId] ? { ...state.valuesByTpl[state.activeId] } : {}; }
     const inputs=$('#inputs'); if(inputs) inputs.innerHTML='';
     const fields = Array.isArray(t.fields)?t.fields:placeholdersIn(t.content).map(k=>({key:k,label:k,type:'text'}));
     fields.forEach(f=>{
@@ -188,23 +189,23 @@
           wrap.appendChild(sel); wrap.appendChild(custom);
           sel.value = opts.includes(initialVal) ? initialVal : (initial ? '__custom__' : (opts[0]||''));
           if(sel.value==='__custom__'){ wrap.classList.add('active'); custom.value = initial; }
-          function sync(){ if(sel.value==='__custom__'){ wrap.classList.add('active'); state.values[f.key]=custom.value.trim(); } else { wrap.classList.remove('active'); state.values[f.key]=sel.value; } updatePreview(); saveLast(); }
+          function sync(){ if(sel.value==='__custom__'){ wrap.classList.add('active'); state.values[f.key]=custom.value.trim(); } else { wrap.classList.remove('active'); state.values[f.key]=sel.value; } state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); }
           sel.addEventListener('change', ()=>{ if(sel.value==='__custom__'){ wrap.classList.add('active'); custom.focus(); } sync(); });
           custom.addEventListener('input', sync);
         } else {
           wrap.appendChild(sel);
           sel.value = opts.includes(initialVal) ? initialVal : (opts[0]||'');
-          sel.addEventListener('change', ()=>{ state.values[f.key]=sel.value; updatePreview(); saveLast(); });
+          sel.addEventListener('change', ()=>{ state.values[f.key]=sel.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
         }
-        control=wrap; state.values[f.key]=(f.allowCustom && sel.value==='__custom__')?initial:sel.value;
+        control=wrap; state.values[f.key]=(f.allowCustom && sel.value==='__custom__')?initial:sel.value; state.valuesByTpl[state.activeId] = { ...state.values };
       }else if(f.type==='textarea'){
         const ta=document.createElement('textarea'); ta.className='control'; ta.placeholder=(f.placeholder||f.label||f.key); ta.value=initial;
-        ta.addEventListener('input',()=>{ state.values[f.key]=ta.value; updatePreview(); saveLast(); });
-        control=ta; state.values[f.key]=initial;
+        ta.addEventListener('input',()=>{ state.values[f.key]=ta.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
+        control=ta; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values };
       }else{
         const inp=document.createElement('input'); inp.className='control'; inp.type='text'; inp.placeholder=(f.placeholder||f.label||f.key); inp.value=initial;
-        inp.addEventListener('input',()=>{ state.values[f.key]=inp.value; updatePreview(); saveLast(); });
-        control=inp; state.values[f.key]=initial;
+        inp.addEventListener('input',()=>{ state.values[f.key]=inp.value; state.valuesByTpl[state.activeId] = { ...state.values }; updatePreview(); saveLast(); });
+        control=inp; state.values[f.key]=initial; state.valuesByTpl[state.activeId] = { ...state.values };
       }
       row.appendChild(lab); row.appendChild(control); inputs.appendChild(row);
     });
