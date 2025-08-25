@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.11.13.2）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.12.2.1）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -16,6 +16,7 @@
 - ChatGPT: `https://chatgpt.com/*`、`https://chat.openai.com/*`
 - Kimi: `https://www.kimi.com/*`、`https://kimi.moonshot.cn/*`
 - DeepSeek: `https://chat.deepseek.com/*`
+- Perplexity: `https://www.perplexity.ai/*`
 
 ### 使用方式（本地开发/调试）
 1. 浏览器打开“扩展程序”页面，开启“开发者模式”。
@@ -27,13 +28,6 @@
 - 手动触发（可选创建 Release）：在 Actions 中运行该工作流，设置 `release=true` 则会基于 `manifest.json` 的版本创建 tag 与 Release，并上传 `edge-prompt-templates-v<version>.zip`。
 - 按 tag 触发：推送 `v*` 标签也会打包并上传 artifact。
 
-### 权限说明（Manifest V3）
-- `permissions`: `storage`、`activeTab`、`scripting`、`tabs`
-- `host_permissions`: ChatGPT/Kimi/DeepSeek 站点 URL
-- `content_scripts`: 在上述站点空闲阶段注入 `scripts/content.js`
-- `background`: `scripts/background.js`（Service Worker）
-- `content_security_policy.extension_pages`: `script-src 'self'; object-src 'self'`
-
 ### 目录结构（关键文件）
 - `edge-prompt-templates/manifest.json`: 扩展清单
 - `edge-prompt-templates/popup.html`: 弹出页 UI
@@ -43,7 +37,7 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.12.2`
+- 当前版本：`2.12.2.1`
 
 ### 打包到 dist
 - 运行 Actions 工作流 “Build dist package” 生成 dist 下的版本化压缩包；或使用分支内的 dist 目录下载最新 zip。
