@@ -134,7 +134,7 @@
       card.innerHTML=`<h3>${escHTML(t.name||'(未命名)')}</h3><div class="small" style="margin-top:6px;"><a class="link" data-edit>编辑</a> · <a class="link" data-del>删除</a></div>`;
       card.addEventListener('click',(e)=>{ if(e.target.dataset.edit!==undefined||e.target.dataset.del!==undefined) return; select(t.id); openFill(true); });
       card.querySelector('[data-edit]').addEventListener('click',(e)=>{ e.stopPropagation(); select(t.id); openEdit(); });
-      card.querySelector('[data-del]').addEventListener('click',async(e)=>{ e.stopPropagation(); if(confirm(`删除模板 “${t.name||'(未命名)'}”？`)){ await del(t.id); toast('已删除'); renderGallery(); }});
+      card.querySelector('[data-del]').addEventListener('click',async(e)=>{ e.stopPropagation(); const ok = await showConfirm(`删除模板 “${t.name||'(未命名)'}”？`,`删除`,`取消`); if(ok){ await del(t.id); toast('已删除'); renderGallery(); }});
 
       // drag & drop sorting
       card.addEventListener('dragstart',(e)=>{
@@ -416,7 +416,7 @@
       if($('#theme')) $('#theme').value = settings.theme || 'system';
       try{ window.__settingsPrevSnapshot__ = JSON.parse(JSON.stringify(settings)); }catch(e){ window.__settingsPrevSnapshot__ = { ...settings }; }
     });
-    $('#back1')?.addEventListener('click', ()=>{ if(dirty){ if(confirm('是否保存当前更改？')){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
+    $('#back1')?.addEventListener('click', async ()=>{ if(dirty){ const ok = await showConfirm('是否保存当前更改？','保存','不保存'); if(ok){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
     $('#back3')?.addEventListener('click', ()=>{
       const prev = window.__settingsPrevSnapshot__ || { ...settings };
       const cur = {
@@ -438,7 +438,7 @@
         return;
       }
       if(hasChanges){
-        const ok = confirm('是否保存更改？');
+        const ok = await showConfirm('是否保存更改？','保存','不保存');
         if(ok){
           if(settings.provider==='custom'){
             settings.regularURL = cur.regularURL;
@@ -466,8 +466,8 @@
       }else{ state.templates.unshift({ id:crypto.randomUUID(), name, content, fields, tmpChat:false, createdAt:Date.now() }); state.activeId=state.templates[0].id; }
       await save(); dirty=false; openFill(true);
     });
-    $('#cancel')?.addEventListener('click', ()=>{ if(dirty){ if(!confirm('放弃未保存的修改？')) return; } select(state.activeId); openFill(true); });
-    $('#del')?.addEventListener('click', ()=>{ if(state.activeId&&confirm('删除此模板？')){ (async()=>{ await del(state.activeId); renderGallery(); setMode('gallery'); })(); }});
+    $('#cancel')?.addEventListener('click', async ()=>{ if(dirty){ const ok = await showConfirm('放弃未保存的修改？','放弃','取消'); if(!ok) return; } select(state.activeId); openFill(true); });
+    $('#del')?.addEventListener('click', async ()=>{ if(state.activeId){ const ok = await showConfirm('删除此模板？','删除','取消'); if(ok){ await del(state.activeId); renderGallery(); setMode('gallery'); } }});
     $('#content')?.addEventListener('input', ()=>{ dirty=true; renderPills(); });
     $('#addField')?.addEventListener('click', ()=>{ const t=state.templates.find(x=>x.id===state.activeId); if(!t) return; t.fields.push({ key:'field_'+(t.fields.length+1), label:'字段'+(t.fields.length+1), type:'text', placeholder:'在此输入…', allowCustom:false, required:false }); dirty=true; renderFieldsDesigner(); });
 
@@ -529,7 +529,7 @@
         if(!res?.ok){ toast(res?.error||'无法打开侧边栏'); }
       });
     });
-    $('#resetDefaults')?.addEventListener('click', async ()=>{ if(confirm('将清空当前模板并恢复预置模板，是否继续？')){ await storage.set({ templates:null, [LAST_KEY]:null }); location.reload(); } });
+    $('#resetDefaults')?.addEventListener('click', async ()=>{ const ok = await showConfirm('将清空当前模板并恢复预置模板，是否继续？','继续','取消'); if(ok){ await storage.set({ templates:null, [LAST_KEY]:null }); location.reload(); } });
     // Provider cards
     const providerMap = {
       chatgpt: { regularURL:'https://chatgpt.com', temporaryURL:'https://chatgpt.com/?temporary-chat=true' },
