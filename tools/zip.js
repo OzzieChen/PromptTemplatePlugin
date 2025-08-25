@@ -21,12 +21,12 @@ function zip(){
 		fs.mkdirSync(stagingParent);
 		fs.mkdirSync(stagingDir, { recursive:true });
 		execFileSync('cp', ['-a', path.join(root, 'edge-prompt-templates') + '/.', stagingDir], {});
-		// touch directories first, then files, to current time
-		execFileSync('find', ['edge-prompt-templates', '-type', 'd', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
-		execFileSync('find', ['edge-prompt-templates', '-type', 'f', '-exec', 'touch', '{}', '+'], { cwd: stagingParent });
+		// touch directories first, then files, to current time (optional)
+		try{ execFileSync('find', ['edge-prompt-templates', '-type', 'd', '-exec', 'touch', '{}', '+'], { cwd: stagingParent }); }catch(e){}
+		try{ execFileSync('find', ['edge-prompt-templates', '-type', 'f', '-exec', 'touch', '{}', '+'], { cwd: stagingParent }); }catch(e){}
 		if(fs.existsSync(out)) fs.rmSync(out);
-		// -D: do not create directory entries (some unzip tools will assign current time to created dirs)
-		execFileSync('zip', ['-r', '-D', out, 'edge-prompt-templates'], { stdio: 'inherit', cwd: stagingParent });
+		// Standard recursive zip of the top-level folder for maximum compatibility
+		execFileSync('zip', ['-r', out, 'edge-prompt-templates'], { stdio: 'inherit', cwd: stagingParent });
 		console.log('Created', out);
 	} catch(e){
 		console.error('zip failed:', e.message);

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Prompt Templates for ChatGPT",
   "description": "Prompt templates with provider presets, side panel, JSON import, and robust Edge injection.",
-  "version": "2.4.10.5",
+  "version": "2.12.2.1",
   "action": {
     "default_title": "Prompt Templates",
     "default_popup": "popup.html",
@@ -27,7 +27,8 @@
     "https://chat.openai.com/*",
     "https://www.kimi.com/*",
     "https://kimi.moonshot.cn/*",
-    "https://chat.deepseek.com/*"
+    "https://chat.deepseek.com/*",
+    "https://www.perplexity.ai/*"
   ],
   "content_scripts": [
     {
@@ -36,7 +37,8 @@
         "https://chat.openai.com/*",
         "https://www.kimi.com/*",
         "https://kimi.moonshot.cn/*",
-        "https://chat.deepseek.com/*"
+        "https://chat.deepseek.com/*",
+        "https://www.perplexity.ai/*"
       ],
       "js": [
         "scripts/content.js"

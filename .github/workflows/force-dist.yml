@@ -1,0 +1,25 @@
+name: Force commit dist zip
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  force_dist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Read version
+        id: ver
+        run: echo "version=$(node -p \"require('./edge-prompt-templates/manifest.json').version\")" >> $GITHUB_OUTPUT
+      - name: Build dist zip
+        run: |
+          mkdir -p dist
+          zip -r dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
+      - name: Commit dist zip back
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "dist: add edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip"
+          file_pattern: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip

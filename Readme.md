@@ -1,6 +1,6 @@
 ## Prompt Templates 浏览器扩展
 
-一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.4.9）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek 等站点的稳健注入与可选一键发送。
+一个用于快速管理与应用 Prompt 模板的浏览器扩展（v2.12.2.1）。支持模板参数化、侧边栏面板、JSON 导入、以及在 ChatGPT/Kimi/DeepSeek/Perplexity 等站点的稳健注入与可选一键发送。
 
 ### 核心功能
 - **模板库与搜索**: 弹出页展示模板卡片，支持搜索与点击进入填充。
@@ -16,6 +16,7 @@
 - ChatGPT: `https://chatgpt.com/*`、`https://chat.openai.com/*`
 - Kimi: `https://www.kimi.com/*`、`https://kimi.moonshot.cn/*`
 - DeepSeek: `https://chat.deepseek.com/*`
+- Perplexity: `https://www.perplexity.ai/*`
 
 ### 使用方式（本地开发/调试）
 1. 浏览器打开“扩展程序”页面，开启“开发者模式”。
@@ -27,13 +28,6 @@
 - 手动触发（可选创建 Release）：在 Actions 中运行该工作流，设置 `release=true` 则会基于 `manifest.json` 的版本创建 tag 与 Release，并上传 `edge-prompt-templates-v<version>.zip`。
 - 按 tag 触发：推送 `v*` 标签也会打包并上传 artifact。
 
-### 权限说明（Manifest V3）
-- `permissions`: `storage`、`activeTab`、`scripting`、`tabs`
-- `host_permissions`: ChatGPT/Kimi/DeepSeek 站点 URL
-- `content_scripts`: 在上述站点空闲阶段注入 `scripts/content.js`
-- `background`: `scripts/background.js`（Service Worker）
-- `content_security_policy.extension_pages`: `script-src 'self'; object-src 'self'`
-
 ### 目录结构（关键文件）
 - `edge-prompt-templates/manifest.json`: 扩展清单
 - `edge-prompt-templates/popup.html`: 弹出页 UI
@@ -43,35 +37,36 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.4.10.1`
+- 当前版本：`2.12.2.1`
 
-#### 2.4.9 变更
-- 修复：在浏览器主页面失焦时“插入/插入并发送”不稳定问题；扩大编辑器选择器并仅在可编辑时使用 activeElement 兜底，移除会导致白屏的写入回退。
-- 修复：浅色主题下滚动条与复选框底色偏深；统一滚动条与复选框样式与对焦态。
-- 修复：编辑页面“开关”区域复选框与文字未垂直居中；使用 inline-flex 居中。
-- 修复：视图切换后首页滚动条不消失；规范容器 overflow 与页面高度。
-- 构建：新增 GitHub Actions 工作流 `package-edge-templates.yml`，仅打包 `edge-prompt-templates`，支持手动触发与按 tag 触发，可选自动创建 Release。
+### 打包到 dist
+- 运行 Actions 工作流 “Build dist package” 生成 dist 下的版本化压缩包；或使用分支内的 dist 目录下载最新 zip。
 
-### 截图（示例尺寸与说明）
-- 弹出页尺寸：宽 560px（以下截图均按真实弹窗宽度）
-- 首页（模板库/搜索）：560×860 PNG
-- 模板详情页（填充/预览/插入按钮）：560×980 PNG
-- 新建/编辑页面（字段设计器）：560×980 PNG
-- 设置页（提供商与主题）：560×900 PNG
+### 截图（浅色 / 深色）
+首页（弹窗）
 
-#### 示例截图（弹窗尺寸）
-- 首页：`assets/home-popup.png`
-- 模板详情页：`assets/detail-popup.png`
-- 新建/编辑页：`assets/edit-popup.png`
-- 设置页：`assets/settings-popup.png`
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/home-popup-light.png" alt="首页（浅色）" width="280">
+  <img src="assets/home-popup-dark.png" alt="首页（深色）" width="280">
+</div>
 
-<div>
-  <p><strong>首页（弹窗）</strong></p>
-  <img src="assets/home-popup.png" alt="首页（模板库/搜索，弹窗尺寸）" width="560">
-  <p><strong>模板详情页（弹窗）</strong></p>
-  <img src="assets/detail-popup.png" alt="模板详情页（弹窗尺寸）" width="560">
-  <p><strong>新建/编辑页（弹窗）</strong></p>
-  <img src="assets/edit-popup.png" alt="新建/编辑页（弹窗尺寸）" width="560">
-  <p><strong>设置页（弹窗）</strong></p>
-  <img src="assets/settings-popup.png" alt="设置页（弹窗尺寸）" width="560">
+模板详情（弹窗）
+
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/detail-popup-light.png" alt="详情（浅色）" width="280">
+  <img src="assets/detail-popup-dark.png" alt="详情（深色）" width="280">
+</div>
+
+新建/编辑（弹窗）
+
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/edit-popup-light.png" alt="编辑（浅色）" width="280">
+  <img src="assets/edit-popup-dark.png" alt="编辑（深色）" width="280">
+</div>
+
+设置（弹窗）
+
+<div style="display:flex;gap:8px;align-items:flex-start">
+  <img src="assets/settings-popup-light.png" alt="设置（浅色）" width="280">
+  <img src="assets/settings-popup-dark.png" alt="设置（深色）" width="280">
 </div>
