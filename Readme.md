@@ -43,7 +43,7 @@
 - `edge-prompt-templates/scripts/content.js`: 站点内查找输入框并写入/触发发送
 
 ### 版本
-- 当前版本：`2.11.13.2`
+- 当前版本：`2.12.1`
 
 ### 打包到 dist
 - 运行 Actions 工作流 “Build dist package”，可在 dist 下生成版本化压缩包，并作为 Artifact 提供下载；勾选 `release=true` 可自动创建 Release 并上传该 zip。
