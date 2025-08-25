@@ -1,5 +1,5 @@
 
-console.log('[PTS] content v2.4.9 up');
+console.log('[PTS] content v2.12.1 up');
 chrome.runtime.onMessage.addListener((m, s, send) => {
   if (m?.type !== 'FILL_AND_SEND') return;
   const text = m.text || '', doSend = !!m.send;
