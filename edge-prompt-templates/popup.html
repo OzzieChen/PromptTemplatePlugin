@@ -30,7 +30,7 @@ h1{font-size:14px;margin:0}
 .row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
 .row.ta{align-items:flex-start}
 .row.ta label.small{padding-top:6px}
-label.small{min-width:110px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+label.small{min-width:120px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .control{width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);outline:none;transition:border-color .15s ease,box-shadow .15s ease;font-family:inherit}
 .control:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 textarea.control{font-family:inherit;line-height:1.55}
@@ -212,13 +212,13 @@ input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px var(--accent-soft
             </div>
           </div>
         </div>
-        <div class="row"><label class="small"></label><div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a><span id="providerCustomTick" class="custom-tick" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></span></div></div>
+        <div class="row"><label class="small"></label><div class="provider-actions"><a id="providerCustomLink" class="link">自定义</a><span id="providerCustomTick" class="custom-tick" aria-hidden="true" title="已自定义"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M6.2 11.5L2.7 8l1.1-1.1l2.4 2.4l5-5l1.1 1.1z"/></svg></span></div></div>
         <div id="customUrlRows" class="">
           <div class="row"><label class="small" for="backendRegular">常规会话 URL *</label><input id="backendRegular" class="control" type="text" placeholder="如：https://chatgpt.com"></div>
           <div class="row"><label class="small" for="backendTemporary">临时会话 URL</label><input id="backendTemporary" class="control" type="text" placeholder="如：https://chatgpt.com/?temporary-chat=true"></div>
         </div>
         <div class="row"><label class="small" for="theme">主题</label>
-          <select id="theme" class="control" style="max-width:180px"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
+          <select id="theme" class="control" style="max-width:200px"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
         </div>
         <div class="separator"></div>
         <div class="row"><button id="saveSettings" class="primary">保存设置</button><button id="resetSettings">恢复默认</button></div>
