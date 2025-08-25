@@ -250,12 +250,14 @@
     let out=replaceByFields(t.content, fields, vals);
     const lines=out.split('\n').map(l=>l);
     const typeVal=(vals.type||'').trim(); const relVal=(vals.relationship||'').trim();
-    const filtered=lines.filter(line=>{
-      const m=line.match(/^\s*[-•\u2022]?\s*若(关系)?为\s*(\S+)\s*[：:]/);
-      if(!m) return true;
-      const target = m[1]?relVal:typeVal; const val=m[2];
-      return target && target===val;
-    }).map(line=> line.replace(/^\s*[-•\u2022]?\s*若(关系)?为\s*\S+\s*[：:]/,'— '));
+    const filtered = (typeVal || relVal)
+      ? lines.filter(line=>{
+          const m=line.match(/^\s*[-•\u2022]?\s*若(关系)?为\s*(\S+)\s*[：:]/);
+          if(!m) return true;
+          const target = m[1]?relVal:typeVal; const val=m[2];
+          return target && target===val;
+        }).map(line=> line.replace(/^\s*[-•\u2022]?\s*若(关系)?为\s*\S+\s*[：:]/,'— '))
+      : lines;
     const env=(vals.environment||'').trim(), cons=(vals.constraints||'').trim();
     let out2 = filtered.map(ln=>{
       if(/结合.*与.*的具体建议/.test(ln)){
