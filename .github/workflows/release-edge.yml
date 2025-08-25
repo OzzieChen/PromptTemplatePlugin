@@ -1,0 +1,60 @@
+name: Release edge-prompt-templates
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (default: read from manifest or tag)'
+        required: false
+        default: ''
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate structure
+        run: |
+          test -d edge-prompt-templates
+          test -f edge-prompt-templates/manifest.json
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            # from tag like v2.4.10.5
+            raw="$GITHUB_REF_NAME"
+            ver="${raw#v}"
+          elif [ -n "${{ github.event.inputs.version }}" ]; then
+            ver="${{ github.event.inputs.version }}"
+          else
+            ver=$(node -p "require('./edge-prompt-templates/manifest.json').version")
+          fi
+          echo "version=$ver" >> $GITHUB_OUTPUT
+
+      - name: Prepare dist
+        run: |
+            rm -rf dist
+            mkdir -p dist
+
+      - name: Zip folder into dist
+        run: |
+          zip -r "dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip" edge-prompt-templates
+
+      - name: Create Release and upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          draft: false
+          prerelease: false
+          files: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip

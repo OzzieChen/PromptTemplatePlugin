@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 1000 760">
+  <rect width="1000" height="760" fill="#f6f7f9"/>
+  <rect x="30" y="30" width="940" height="700" rx="10" fill="#ffffff" stroke="#dcdfe6"/>
+  <text x="50" y="80" font-size="26" fill="#333">设置页示意图</text>
+  <text x="50" y="120" font-size="16" fill="#555">提供商</text>
+  <rect x="50" y="140" width="320" height="36" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="60" y="165" font-size="14" fill="#777">ChatGPT / Kimi / DeepSeek</text>
+  <text x="50" y="200" font-size="16" fill="#555">常规会话 URL</text>
+  <rect x="50" y="220" width="880" height="36" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="60" y="245" font-size="14" fill="#777">https://chatgpt.com</text>
+  <text x="50" y="290" font-size="16" fill="#555">临时会话 URL</text>
+  <rect x="50" y="310" width="880" height="36" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="60" y="335" font-size="14" fill="#777">https://chatgpt.com/?temporary-chat=true</text>
+  <text x="50" y="390" font-size="16" fill="#555">主题</text>
+  <rect x="50" y="410" width="240" height="36" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="60" y="435" font-size="14" fill="#777">系统 / 浅色 / 深色</text>
+  <text x="50" y="720" font-size="14" fill="#888">建议尺寸：1000×760（此图为占位符，替换为真实截图）</text>
+</svg>

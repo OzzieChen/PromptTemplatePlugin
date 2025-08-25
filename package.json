@@ -1,0 +1,13 @@
+{
+  "name": "pts-screenshotter",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "shoot": "node tools/screenshot.js",
+    "zip": "node tools/zip.js"
+  },
+  "dependencies": {
+    "puppeteer": "^22.10.0",
+    "sharp": "^0.34.3"
+  }
+}

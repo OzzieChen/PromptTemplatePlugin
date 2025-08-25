@@ -1,0 +1,6 @@
+name: DISABLED - deprecated workflow
+
+on:
+  workflow_call:
+
+jobs: {}

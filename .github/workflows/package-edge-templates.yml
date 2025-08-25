@@ -1,0 +1,49 @@
+name: Package edge-prompt-templates
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Create GitHub Release'
+        required: false
+        default: 'false'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version from manifest
+        id: ver
+        run: |
+          ver=$(jq -r .version edge-prompt-templates/manifest.json)
+          echo "version=$ver" >> $GITHUB_OUTPUT
+
+      - name: Zip edge-prompt-templates
+        run: |
+          zip -r edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          path: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+          if-no-files-found: error
+
+      - name: Create Release (optional)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          draft: false
+          prerelease: false
+          files: edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
