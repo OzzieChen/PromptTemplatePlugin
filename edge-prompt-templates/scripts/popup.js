@@ -55,32 +55,34 @@
 
   function embeddedDefaults(){
     return [
-      {"id":"tpl-formal-writing","name":"书面材料英语（标题/正文 分场景）","content":"【任务】\n请将以下中文内容翻译为正式、精炼、用于汇报材料的英语。根据文本类型（{{type}}：Title/Body）采用不同精炼程度：\n- 若为 Title：给出3个精炼标题候选（尽量短、信息密度高、避免口语化）。\n- 若为 Body：以分点（1-3层级）方式精炼呈现，句式紧凑、动宾清晰、避免冗词。\n\n【输入】\n---\n{{source_text}}\n---\n\n【偏好】\n- 读者：{{audience}}（如 Senior Leadership/Stakeholders/Engineers）\n- 英语变体：{{english_variant}}（默认 American English）\n- 术语：保留行业术语并保持一致性（{{domain}}）\n\n【输出格式】\n1) Refined {{type}}（主版本）\n2) Alternative versions（2个）\n3) Notes（简要说明选择的措辞与取舍）","fields":[
-        {"key":"type","label":"文本类型","type":"select","options":["Title","Body"],"allowCustom":true,"default":"Body","required":true},
-        {"key":"audience","label":"读者类型","type":"select","options":["Senior Leadership","Stakeholders","Engineers"],"allowCustom":true,"default":"Senior Leadership"},
+      {"id":"tpl-formal-writing","name":"英语翻译（书面）","content":"【任务】\n将以下中文内容翻译为用于{{scene}}的正式、精炼英语，依据“类型”选择合适的呈现方式。\n- 类型=标题：给出 3 个信息密度高、专业、非口语化标题候选（尽量短）。\n- 类型=正文：以条理清晰的分点（1–3 层级）表达，句式紧凑、主谓明确、避免冗词。\n\n【输入】\n---\n{{source_text}}\n---\n\n【要求】\n- 英语变体：{{english_variant}}。\n- 术语领域：{{domain}}，保持术语一致性。\n\n【输出】\n1) 主版本（按“类型”与“场景”呈现）\n2) 可选替代版本（2 个）\n3) 说明（简述措辞选择/取舍依据）","fields":[
+        {"key":"type","label":"类型","type":"select","options":["标题","正文"],"allowCustom":false,"default":"标题","required":true},
+        {"key":"scene","label":"场景","type":"select","options":["PPT书面材料","正式邮件","IM沟通"],"allowCustom":true,"default":"PPT书面材料"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
-        {"key":"domain","label":"术语领域","type":"select","options":["Cloud","AI","Networking","Database"],"allowCustom":true,"default":"Cloud"},
+        {"key":"domain","label":"术语领域","type":"select","options":["云计算","AI","生活场景（如酒店）"],"allowCustom":true,"default":"云计算"},
         {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"在此粘贴/输入中文正文…","required":true}
       ],"tmpChat":false},
-      {"id":"tpl-conversation","name":"口语/即时沟通英语（含用法讲解）","content":"【任务】\n将以下中文转为地道、自然的英语表达，适合{{channel}}。\n- 若关系为 上级：请在措辞中保持尊重与主动性。\n- 若关系为 客户：请聚焦清晰、礼貌与交付承诺。\n\n【输入】\n---\n{{source_text}}\n---\n\n【偏好】\n- 英语变体：{{english_variant}}（默认 American English）\n- 关系：{{relationship}}（如 同事/客户/供应商/上级/朋友）\n\n【输出格式】\n1) English A / B / C\n2) 中文说明（使用场景、语气、常见搭配/替换表达）\n3) Mini phrasebook（3–5条可复用表达）","fields":[
-        {"key":"channel","label":"沟通渠道","type":"select","options":["WhatsApp","口语沟通","邮件简讯"],"allowCustom":true,"default":"WhatsApp","required":true},
-        {"key":"relationship","label":"关系类型","type":"select","options":["同事","客户","供应商","上级","朋友"],"allowCustom":true,"default":"同事"},
+      {"id":"tpl-conversation","name":"英语翻译（口语）","content":"【任务】\n将以下中文改写为地道、自然的口语英语，适配：\n- 场景：{{scene}}\n- 关系类型：{{relationship}}\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 英语表达 A / B / C（语气与用词贴合场景与关系）\n2) 中文要点：使用场景、语气建议、常见替代表达\n3) Mini phrasebook：3–5 条可复用表达","fields":[
+        {"key":"scene","label":"场景","type":"select","options":["日常交流","IM沟通","邮件简讯"],"allowCustom":true,"default":"日常交流","required":true},
+        {"key":"relationship","label":"关系类型","type":"select","options":["同事","客户","供应商（酒店、餐馆等）"],"allowCustom":true,"default":"同事"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
-        {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"要表达的中文内容，例如给同事的请假说明…","required":true}
+        {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"要表达的中文内容，例如说明、致谢、请求…","required":true}
       ],"tmpChat":false},
-      {"id":"tpl-schedule","name":"设置提醒（ChatGPT 任务调度）","content":"你是一个能创建定时任务的助手。请根据下述信息，为我创建/更新一个提醒任务：\n【任务标题】{{title}}\n【提醒内容】{{reminder_message}}\n【时间/频率】{{schedule_human}}\n\n【如果你具备任务调度能力】\n- 请创建一个任务，并使用如下配置：\nTitle: {{title}}\nPrompt: Tell me to {{reminder_message}}\nSchedule (VEVENT):\nBEGIN:VEVENT\nRRULE:{{rrule}}\nEND:VEVENT\n\n【如果当前环境不支持自动创建任务】\n- 请输出一个 .ics 片段（VEVENT），并附中文说明手动导入日历的步骤。","fields":[
-        {"key":"title","label":"任务标题","type":"text","placeholder":"如：每日站会提醒（可留空）"},
-        {"key":"reminder_message","label":"提醒内容","type":"text","placeholder":"如：在 9:30 提醒我开始每日站会","required":true},
-        {"key":"schedule_human","label":"时间/频率（自然语言）","type":"text","placeholder":"如：工作日每天 9:25 或 每周一 10:00","required":true},
-        {"key":"rrule","label":"RRULE（高级，可留空）","type":"text","placeholder":"如：FREQ=WEEKLY;BYDAY=MO;BYHOUR=10;BYMINUTE=0"}
+      {"id":"tpl-tech-learning","name":"技术点学习","content":"【目标】\n围绕“技术点描述”进行分层讲解，帮助不同了解程度的读者建立正确的认知与心智模型。\n\n【技术点】\n{{topic}}\n\n【要求】\n- 领域：{{domain}}\n- 当前了解程度：{{level}}（据此控制深度/比喻/案例）\n\n【输出结构】\n1) TL;DR（≤5 行关键要点）\n2) 核心概念与名词解释（避免堆术语）\n3) 工作原理/数据流/组件关系（可用列表或简图）\n4) 实例/对比（结合 {{domain}} 的常见场景）\n5) 学习路径与实践建议（从{{level}}出发）\n6) 推荐资料（官方/权威优先）","fields":[
+        {"key":"topic","label":"技术点描述","type":"textarea","placeholder":"请输入要学习的技术点…","required":true},
+        {"key":"domain","label":"领域","type":"select","options":["云计算","AI","数据库","大数据"],"allowCustom":true,"default":"云计算"},
+        {"key":"level","label":"了解程度","type":"select","options":["完全不了解","有基础了解","熟练理解","领域专家"],"allowCustom":true,"default":"有基础了解"}
       ],"tmpChat":false},
-      {"id":"tpl-tech-understanding","name":"技术理解与问题拆解（中文输出 + 术语英注）","content":"【目标】\n围绕我提供的问题，生成**中文**技术解析 + 解题路线图。遇到关键术语请使用**英文术语**并在首次出现时用括号标注，如：一致性（**consistency**）。\n\n【问题】\n{{problem_statement}}\n\n【上下文（可选）】\n- 领域：{{domain}}\n- 环境：{{environment}}\n- 现象：{{expected_vs_observed}}\n- 约束：{{constraints}}\n- 受众：{{audience}}\n\n【输出结构】\n1) TL;DR（≤5行要点）\n2) 概念图谱（关键概念/组件/数据流；可用列表或 ASCII/mermaid）\n3) 原理解析（先宏观，再微观，必要处举例）\n4) 解题步骤（可操作的检查/验证清单）\n5) 结合{{environment}}与{{constraints}}的具体建议\n6) 延伸阅读（官方/权威优先）\n\n【语言策略】\n- 最终输出语言：**中文**；术语首次出现时附英文（加粗）。","fields":[
-        {"key":"problem_statement","label":"问题（中文）","type":"textarea","placeholder":"请粘贴你遇到的技术问题、上下文、错误日志片段…","required":true},
-        {"key":"domain","label":"领域","type":"select","options":["Cloud","AI","Networking","Database","Security"],"allowCustom":true,"default":"Cloud"},
+      {"id":"tpl-tech-troubleshooting","name":"问题处理","content":"【任务】\n基于下述信息输出可操作的中文排障方案与结论说明。遇到关键术语请附英文（首次出现时）。\n\n【问题】\n{{problem}}\n\n【上下文】\n- 领域：{{domain}}\n- 环境：{{environment}}\n- 预期/实际：{{expected_vs_observed}}\n- 约束：{{constraints}}\n- 受众：{{audience}}\n\n【输出结构】\n1) TL;DR（≤5 行）\n2) 根因假设与验证路径（按优先级）\n3) 详细排障步骤（命令/日志/指标，含预计结果）\n4) 结合 {{environment}} 与 {{constraints}} 的注意事项\n5) 对不同受众的表述建议（例如给客户/领导/工程师）","fields":[
+        {"key":"problem","label":"问题描述","type":"textarea","placeholder":"请描述遇到的问题、上下文、错误信息…","required":true},
+        {"key":"domain","label":"领域","type":"select","options":["云计算","AI","数据库","大数据"],"allowCustom":true,"default":"云计算"},
         {"key":"environment","label":"环境","type":"text","placeholder":"如：K8s on AKS, Istio 1.22, Region: East Asia"},
-        {"key":"expected_vs_observed","label":"现象","type":"text","placeholder":"预期 vs 实际现象（可要点列出）"},
+        {"key":"expected_vs_observed","label":"预期现象","type":"text","placeholder":"预期 vs 实际现象（可要点列出）"},
         {"key":"constraints","label":"约束","type":"text","placeholder":"如：只能读权限/无公网/必须零停机等"},
-        {"key":"audience","label":"受众","type":"select","options":["初学者","中级工程师","架构师"],"allowCustom":true,"default":"中级工程师"}
+        {"key":"audience","label":"受众","type":"select","options":["初学者","中级工程师","高级架构师","客户答复"],"allowCustom":true,"default":"中级工程师"}
+      ],"tmpChat":false},
+      {"id":"tpl-english-comprehension","name":"英语理解","content":"【目标】\n帮助用户深入理解一段英语（单词/短语/句子/长难句）。\n\n【英语原文】\n{{source_en}}\n\n【输出】\n1) 中文翻译（准确、自然）\n2) 句法/语法分析（拆解句子结构，解释从句、时态、搭配）\n3) 长难句拆解（逐步还原主干与修饰）\n4) 常用词组与搭配（总结 5–8 条，便于复用）\n5) 学习建议（如何在相似语境下表达）","fields":[
+        {"key":"source_en","label":"英语原文","type":"textarea","placeholder":"粘贴需要理解的英文单词/短语/句子…","required":true}
       ],"tmpChat":false}
     ];
   }
