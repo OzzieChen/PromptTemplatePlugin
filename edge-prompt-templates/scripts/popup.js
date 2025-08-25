@@ -69,7 +69,7 @@
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
         {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"要表达的中文内容，例如说明、致谢、请求…","required":true}
       ],"tmpChat":false},
-      {"id":"tpl-tech-learning","name":"技术点学习","content":"【目标】\n围绕“技术点描述”进行分层讲解，帮助不同了解程度的读者建立正确的认知与心智模型。\n\n【技术点】\n{{topic}}\n\n【要求】\n- 领域：{{domain}}\n- 当前了解程度：{{level}}（据此控制深度/比喻/案例）\n\n【输出结构】\n1) TL;DR（≤5 行关键要点）\n2) 核心概念与名词解释（避免堆术语）\n3) 工作原理/数据流/组件关系（可用列表或简图）\n4) 实例/对比（结合 {{domain}} 的常见场景）\n5) 学习路径与实践建议（从{{level}}出发）\n6) 推荐资料（官方/权威优先）","fields":[
+      {"id":"tpl-tech-learning","name":"技术点学习","content":"【目标】\n围绕“技术点描述”进行分层讲解，帮助不同了解程度的读者建立正确的认知与心智模型。\n\n【技术点】\n{{topic}}\n\n【要求】\n- 领域：{{domain}}\n- 当前了解程度：{{level}}（据此控制深度/比喻/案例）\n- 关键术语首次出现时附英文术语（括号），如：向量化（Embedding）\n\n【输出结构】\n1) TL;DR（≤5 行关键要点）\n2) 核心概念与名词解释（避免堆术语）\n3) 工作原理/数据流/组件关系（可用列表或简图）\n4) 实例/对比（结合 {{domain}} 的常见场景）\n5) 学习路径与实践建议（从{{level}}出发）\n6) 推荐资料（官方/权威优先）","fields":[
         {"key":"topic","label":"技术点描述","type":"textarea","placeholder":"请输入要学习的技术点…","required":true},
         {"key":"domain","label":"领域","type":"select","options":["云计算","AI","数据库","大数据"],"allowCustom":true,"default":"云计算"},
         {"key":"level","label":"了解程度","type":"select","options":["完全不了解","有基础了解","熟练理解","领域专家"],"allowCustom":true,"default":"有基础了解"}
