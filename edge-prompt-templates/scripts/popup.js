@@ -465,7 +465,6 @@
       setMode('gallery'); renderGallery();
     });
     $('#back2')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
-    $('#back3')?.addEventListener('click', ()=>{ setMode('gallery'); renderGallery(); });
     $('#save')?.addEventListener('click', async ()=>{
       const name=$('#name').value.trim(), content=$('#content').value;
       if(!name||!content){ toast('名称与内容均必填'); return; }
