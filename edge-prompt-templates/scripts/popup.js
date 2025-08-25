@@ -1,7 +1,7 @@
 
 // v2.11.2.1 - provider grid alignment + panel sync; scripts/popup.js
 (function(){
-  console.log('[PTS] popup v2.12.1 up');
+  console.log('[PTS] popup v2.12.1.1 up');
 
   function $(s){ return document.querySelector(s); }
   function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent=msg||''; el.classList.add('show'); setTimeout(()=>{ el.classList.remove('show'); el.textContent=''; }, 1600); }
