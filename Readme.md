@@ -45,6 +45,9 @@
 ### 版本
 - 当前版本：`2.11.13.2`
 
+### 打包到 dist
+- 运行 Actions 工作流 “Build dist package”，可在 dist 下生成版本化压缩包，并作为 Artifact 提供下载；勾选 `release=true` 可自动创建 Release 并上传该 zip。
+
 #### 2.11.2 变更
 - 设置页改为“服务提供商卡片”选择：ChatGPT/Kimi/DeepSeek/Perplexity/自定义。仅“自定义”显示 URL 输入。
 - 新增 Perplexity 预置支持并扩展权限与注入识别域名。

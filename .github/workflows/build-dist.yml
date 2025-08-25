@@ -1,0 +1,36 @@
+name: Build dist package
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Create GitHub Release with asset'
+        required: false
+        default: 'false'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version
+        id: ver
+        run: echo "version=$(node -p \"require('./edge-prompt-templates/manifest.json').version\")" >> $GITHUB_OUTPUT
+      - name: Prepare dist
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          zip -r dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip edge-prompt-templates
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-edge-prompt-templates-v${{ steps.ver.outputs.version }}
+          path: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
+      - name: Create Release
+        if: ${{ github.event.inputs.release == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: edge-prompt-templates v${{ steps.ver.outputs.version }}
+          draft: false
+          prerelease: false
+          files: dist/edge-prompt-templates-v${{ steps.ver.outputs.version }}.zip
