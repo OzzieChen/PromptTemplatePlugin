@@ -56,14 +56,14 @@
 
   function embeddedDefaults(){
     return [
-      {"id":"tpl-formal-writing","name":"英语翻译（书面）","content":"【任务】\n将以下中文内容翻译为用于{{scene}}的正式、精炼英语。\n- 当前类型：{{type}}（若为“标题”，仅输出标题候选；若为“正文”，用条理清晰的分点表达）。\n\n【输入】\n---\n{{source_text}}\n---\n\n【要求】\n- 英语变体：{{english_variant}}；术语领域：{{domain}}（保持一致性）。\n\n【输出】\n1) 主版本（严格符合 {{type}} 与 {{scene}}）\n2) 可选替代版本（2 个）\n3) 说明（简述措辞选择/取舍依据）","fields":[
+      {"id":"tpl-formal-writing","name":"英语翻译（书面）","content":"【任务】\n将以下中文内容翻译为正式、精炼的英语，严格贴合所选场景与类型。\n- 场景：{{scene}}\n- 类型：{{type}}（“标题”→仅输出高质量标题候选；“正文”→用条理清晰的分点表达）\n- 英语变体：{{english_variant}}\n- 术语领域：{{domain}}（术语前后一致）\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 主版本（严格符合 {{scene}} 场景下，作为 {{type}} 的书面英语翻译）\n2) 可选替代版本（2 个）\n3) 说明（简述措辞取舍与风格选择）","fields":[
         {"key":"type","label":"类型","type":"select","options":["标题","正文"],"allowCustom":false,"default":"标题","required":true},
         {"key":"scene","label":"场景","type":"select","options":["PPT书面材料","正式邮件","IM沟通"],"allowCustom":true,"default":"PPT书面材料"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
         {"key":"domain","label":"术语领域","type":"select","options":["云计算","AI","生活场景（如酒店）"],"allowCustom":true,"default":"云计算"},
         {"key":"source_text","label":"中文原文","type":"textarea","placeholder":"在此粘贴/输入中文正文…","required":true}
       ],"tmpChat":false},
-      {"id":"tpl-conversation","name":"英语翻译（口语）","content":"【任务】\n将以下中文改写为地道、自然的口语英语，适配：\n- 场景：{{scene}}\n- 关系类型：{{relationship}}\n- 英语变体：{{english_variant}}\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 英语表达 A / B / C（语气与用词贴合场景与关系与变体）\n2) 中文要点：使用场景、语气建议、常见替代表达\n3) Mini phrasebook：3–5 条可复用表达","fields":[
+      {"id":"tpl-conversation","name":"英语翻译（口语）","content":"【任务】\n将以下中文改写为地道、自然的口语英语，确保语气与用词贴合：\n- 场景：{{scene}}\n- 关系类型：{{relationship}}\n- 英语变体：{{english_variant}}\n\n【输入】\n---\n{{source_text}}\n---\n\n【输出】\n1) 英语表达 A / B / C（分别给出不同风格或语气，但均符合上述场景/关系/变体）\n2) 中文要点（说明使用场景、语气建议、常见替代表达）\n3) Mini phrasebook（3–5 条可复用表达，便于迁移使用）","fields":[
         {"key":"scene","label":"场景","type":"select","options":["日常交流","IM沟通","邮件简讯"],"allowCustom":true,"default":"日常交流","required":false},
         {"key":"relationship","label":"关系类型","type":"select","options":["同事","客户","供应商（酒店、餐馆等）"],"allowCustom":true,"default":"同事"},
         {"key":"english_variant","label":"英语变体","type":"select","options":["American English","British English"],"allowCustom":false,"default":"American English"},
