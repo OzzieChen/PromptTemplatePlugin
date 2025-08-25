@@ -88,27 +88,77 @@ async function stitchSideBySide(leftPath, rightPath, outPath){
   const assetsDir = path.resolve(__dirname, '..', 'assets');
   await ensureDir(assetsDir);
 
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox','--disable-setuid-sandbox','--lang=zh-CN,zh'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox','--disable-setuid-sandbox'] });
   const page = await browser.newPage();
+
+  await page.emulateTimezone('Asia/Shanghai');
+  try { await page.setExtraHTTPHeaders({ 'Accept-Language': 'zh-CN,zh;q=0.9' }); } catch(e){}
+
+  await page.evaluateOnNewDocument(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `*{ font-family: "PingFang SC", "Noto Sans SC", -apple-system, Segoe UI, Roboto, Arial, sans-serif !important; }`;
+    document.documentElement.appendChild(style);
+    window.chrome = {
+      runtime: { id: 'dev-stub', sendMessage: (payload, cb) => { try { cb && cb({ ok:false }); } catch(e){} } },
+      sidePanel: { open: async () => {} }
+    };
+  });
 
   const fileUrl = 'file://' + path.resolve(__dirname, '..', 'edge-prompt-templates', 'popup.html');
 
-  const tmp = name => ({ light: path.join(assetsDir, `${name}-light.png`), dark: path.join(assetsDir, `${name}-dark.png`), out: path.join(assetsDir, `${name}.png`) });
-  const home = tmp('home-popup');
-  const detail = tmp('detail-popup');
-  const edit = tmp('edit-popup');
-  const imp = tmp('edit-import-popup');
-  const settings = tmp('settings-popup');
+  async function capturePopupPair(name, width, height){
+    await page.setViewport({ width, height, deviceScaleFactor: 1 });
+    await page.goto(fileUrl, { waitUntil: 'domcontentloaded' });
+    await waitForCards(page);
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme','light'));
+    await sleep(200);
+    await page.screenshot({ path: path.join(assetsDir, name+'-light.png') });
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme','dark'));
+    await sleep(200);
+    await page.screenshot({ path: path.join(assetsDir, name+'-dark.png') });
+  }
 
-  await captureVariant(page, fileUrl, 'light', { home: home.light, detail: detail.light, edit: edit.light, import: imp.light, settings: settings.light });
-  await captureVariant(page, fileUrl, 'dark', { home: home.dark, detail: detail.dark, edit: edit.dark, import: imp.dark, settings: settings.dark });
+  // home
+  await capturePopupPair('home-popup', 560, 860);
 
-  await stitchSideBySide(home.light, home.dark, home.out);
-  await stitchSideBySide(detail.light, detail.dark, detail.out);
-  await stitchSideBySide(edit.light, edit.dark, edit.out);
-  await stitchSideBySide(imp.light, imp.dark, imp.out);
-  await stitchSideBySide(settings.light, settings.dark, settings.out);
+  // detail
+  await page.setViewport({ width: 560, height: 980, deviceScaleFactor: 1 });
+  await page.goto(fileUrl, { waitUntil: 'domcontentloaded' });
+  await waitForCards(page);
+  await page.click('#cards .card');
+  await page.waitForSelector('#fillView:not(.hidden)');
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','light'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'detail-popup-light.png') });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','dark'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'detail-popup-dark.png') });
+
+  // edit
+  await page.click('#back2');
+  await waitForCards(page);
+  await page.click('#cards .card [data-edit]');
+  await page.waitForSelector('#editView:not(.hidden)');
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','light'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'edit-popup-light.png') });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','dark'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'edit-popup-dark.png') });
+
+  // settings
+  await page.click('#back1');
+  await waitForCards(page);
+  await page.click('#settingsBtn');
+  await page.waitForSelector('#settingsView:not(.hidden)');
+  await page.setViewport({ width: 560, height: 900, deviceScaleFactor: 1 });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','light'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'settings-popup-light.png') });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme','dark'));
+  await sleep(200);
+  await page.screenshot({ path: path.join(assetsDir, 'settings-popup-dark.png') });
 
   await browser.close();
-  console.log('Popup screenshots saved to', assetsDir);
+  console.log('Popup screenshots (light/dark) saved to', assetsDir);
 })();
