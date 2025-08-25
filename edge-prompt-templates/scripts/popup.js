@@ -419,7 +419,7 @@
       try{ window.__settingsPrevSnapshot__ = JSON.parse(JSON.stringify(settings)); }catch(e){ window.__settingsPrevSnapshot__ = { ...settings }; }
     });
     $('#back1')?.addEventListener('click', async ()=>{ if(dirty){ const ok = await showConfirm('是否保存当前更改？','保存','不保存'); if(ok){ $('#save')?.click(); return; } } setMode('gallery'); renderGallery(); });
-    $('#back3')?.addEventListener('click', ()=>{
+    $('#back3')?.addEventListener('click', async ()=>{
       const prev = window.__settingsPrevSnapshot__ || { ...settings };
       const cur = {
         provider: settings.provider,
